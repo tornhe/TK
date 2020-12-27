@@ -1,0 +1,142 @@
+#:kivy 1.11.1
+<legg_inn_bets>: 
+    spelar: spelar
+    dato : dato
+    heimelag: heimelag
+    bortelag: bortelag
+    bet: bet
+    odds: odds
+    innsats: innsats
+
+    canvas.before:
+        Color:
+            rgb: 0.25, 0.655, 0.596, 0.5
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    FloatLayout:
+        Spinner:
+            id: spelar
+            size_hint: 0.15, 0.075
+            pos_hint: {'x': 0.05, 'y': .9}
+            text: "Velg spelar"
+            values: 'Martin', 'Sindre', 'Tor'
+            background_color: 0.32, 0.55, 0.516, 1
+            on_text: root.spelar = self.text
+            on_text: root.sjekk_siste_kamp()
+            
+
+        Spinner:
+            id: runde
+            size_hint: 0.15, 0.07
+            pos_hint: {'x': 0.05, 'y': .8}
+            text: "Velg runde"
+            values: '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'
+            background_color: 0.32, 0.55, 0.516, 1
+            on_text: root.runde = self.text
+            on_text: root.update_table()
+
+        Spinner:
+            id : kamp
+            size_hint: 0.15, 0.07
+            pos_hint: {'x': 0.2, 'y': .8}
+            text: "Velg kamp"
+            values: '1', '2', '3', '4', '5'
+            background_color: 0.32, 0.55, 0.516, 1
+            on_text: root.kamp = self.text
+            on_text: root.update_table()
+
+        Label:
+            #root.last_data(spelar.text)
+            #text: root.last_data(spelar.text)
+            #text: "" if root.row is None else spelar.text + " sin siste kamp er kamp " + str(root.data.iloc[int(root.row)][1]) + " i runde " + str(root.data.iloc[int(root.row)][0])
+            text: "" if root.spelar is None else spelar.text + " sin siste kamp er kamp " + str(root.siste_kamp) + " i runde " + str(root.siste_runde)
+            pos_hint: {'x': 0.4, 'y': .9}
+            size_hint: 0.2, 0.05
+
+        Label:
+            text: "Dato: "
+            pos_hint: {'x': 0.3, 'center_y': .8}
+            size_hint: 0.2, 0.05
+
+        TextInput:
+            id: dato
+            multinline:False
+            pos_hint: {'x': 0.5, 'center_y': .8}
+            size_hint: 0.2, 0.05
+            hint_text: "" if root.row is None else root.data[root.spelar_idx]['Dato'][root.row]
+            #hint_text: "" if root.row is None else root.data.iloc[int(root.row)][2]
+
+        Label:
+            text: "Heimelag: "
+            pos_hint: {'x': 0.3, 'center_y': .7}
+            size_hint: 0.2, 0.05
+
+        TextInput:
+            id: heimelag
+            multinline: False
+            pos_hint: {'x': 0.5, 'center_y': .7}
+            size_hint: 0.2, 0.05
+            hint_text: "" if root.row is None else root.data[root.spelar_idx]['Heimelag'][root.row]
+
+        Label:
+            text: "Bortelag: "
+            pos_hint: {'x': 0.3, 'center_y': .6}
+            size_hint: 0.2, 0.05
+
+        TextInput:
+            id: bortelag
+            multinline:False
+            pos_hint: {'x': 0.5, 'center_y': .6}
+            size_hint: 0.2, 0.05
+            hint_text: "" if root.row is None else root.data[root.spelar_idx]['Bortelag'][root.row]
+
+        Label:
+            text: "Bet: "
+            pos_hint: {'x': 0.3, 'center_y': .5}
+            size_hint: 0.2, 0.05
+
+        TextInput:
+            id: bet
+            multinline:False
+            pos_hint: {'x': 0.5, 'center_y': .5}
+            size_hint: 0.2, 0.05
+            hint_text: "" if root.row is None else root.data[root.spelar_idx]['Bet'][root.row]
+
+        Label:
+            text: "Odds: "
+            pos_hint: {'x': 0.3, 'center_y': .4}
+            size_hint: 0.2, 0.05
+        
+        TextInput:
+            id: odds
+            multinline:False
+            pos_hint: {'x': 0.5, 'center_y': .4}
+            size_hint: 0.2, 0.05
+            hint_text: "" if root.row is None else root.data[root.spelar_idx]['Odds'][root.row]
+
+        Label:
+            text: "Innsats: "
+            pos_hint: {'x': 0.3, 'center_y': .3}
+            size_hint: 0.2, 0.05
+
+        TextInput:
+            id: innsats
+            multinline:False
+            pos_hint: {'x': 0.5, 'center_y': .3}
+            size_hint: 0.2, 0.05
+            hint_text: "" if root.row is None else root.data[root.spelar_idx]['Innsats'][root.row]
+
+        Button:
+            text:"Submit"
+            pos_hint: {'x': 0.5, 'y': .1}
+            size_hint: 0.2, 0.05
+            on_press: root.submit()
+            background_color: 0.32, 0.55, 0.516, 1
+
+        Button:
+            text: 'Tilbake'
+            background_color: 0.32, 0.55, 0.516, 1
+            size_hint: 0.1, 0.1
+            on_press: root.manager.current = 'start'
