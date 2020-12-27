@@ -1,4 +1,4 @@
 credentials.json
 .vscode/
-.TK_env/
+TK_env/
 __pycache__/
