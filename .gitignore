@@ -2,3 +2,5 @@ credentials.json
 .vscode/
 TK_env/
 __pycache__/
+.idea/
+venv/
