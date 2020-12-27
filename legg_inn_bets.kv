@@ -48,10 +48,7 @@
             on_text: root.update_table()
 
         Label:
-            #root.last_data(spelar.text)
-            #text: root.last_data(spelar.text)
-            #text: "" if root.row is None else spelar.text + " sin siste kamp er kamp " + str(root.data.iloc[int(root.row)][1]) + " i runde " + str(root.data.iloc[int(root.row)][0])
-            text: "" if root.spelar is None else spelar.text + " sin siste kamp er kamp " + str(root.siste_kamp) + " i runde " + str(root.siste_runde)
+            text: "" if root.spelar is None else spelar.text + " sin neste kamp er kamp " + str(root.siste_kamp) + " i runde " + str(root.siste_runde)
             pos_hint: {'x': 0.4, 'y': .9}
             size_hint: 0.2, 0.05
 
@@ -66,7 +63,6 @@
             pos_hint: {'x': 0.5, 'center_y': .8}
             size_hint: 0.2, 0.05
             hint_text: "" if root.row is None else root.data[root.spelar_idx]['Dato'][root.row]
-            #hint_text: "" if root.row is None else root.data.iloc[int(root.row)][2]
 
         Label:
             text: "Heimelag: "

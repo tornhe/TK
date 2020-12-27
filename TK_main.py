@@ -63,10 +63,8 @@ class legg_inn_bets(Screen):
     def update_table(self):
         if self.runde is not None and self.kamp is not None:
             self.row = ((int(self.runde)) - 1) * 5 + int(self.kamp)
-            print(self.row)
 
     def submit(self):
-        print(self.runde, self.kamp)
         new_data = [self.runde, self.kamp, self.dato.text, self.heimelag.text, self.bortelag.text, self.bet.text, self.odds.text, self.innsats.text]
         
         sheets[self.spelar_idx].insert_row(new_data, self.row+1)
