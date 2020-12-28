@@ -30,14 +30,18 @@
                 background_color: 0.32, 0.55, 0.516, 1
                 size_hint: 0.4, 0.2
                 pos_hint: {'center_x': 0.5, 'center_y': 0.9}
-                on_press: root.manager.current = 'legg inn bets'
+                on_press:
+                    root.manager.transition.direction = 'left'
+                    root.manager.current = 'legg inn bets'
 
             Button:
                 text: 'Legg inn resultat'
                 background_color: 0.32, 0.55, 0.516, 1
                 pos_hint: {'center_x': 0.5, 'center_y': 0.7}
                 size_hint: 0.4, 0.2
-                on_press: root.manager.current = 'legg inn resultat'
+                on_press:
+                    root.manager.transition.direction = 'left'
+                    root.manager.current = 'legg inn resultat'
             Button:
                 text: 'Sjao resultat'
                 background_color: 0.32, 0.55, 0.516, 1
@@ -77,5 +81,7 @@
             size_hint: 0.1, 0.1
             background_color: 0.32, 0.55, 0.516, 1
 
-            on_press: root.manager.current = 'start'
+            on_press:
+                root.manager.transition.direction = 'right'
+                root.manager.current = 'start'
 

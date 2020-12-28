@@ -12,8 +12,10 @@ from kivy.lang import Builder
 from kivy.properties import ObjectProperty
 from kivy.properties import StringProperty
 from kivy.properties import NumericProperty
+from kivy.uix.popup import Popup
 from gdrive import load, data_to_df
 
+from hjelpefunk import*
 Builder.load_file('legg_inn_bets.kv')
 
 martin_sheet = load('Martin')
@@ -47,6 +49,7 @@ class legg_inn_bets(Screen):
     spelar_idx = NumericProperty(None)
     siste_runde = ObjectProperty(None)
     siste_kamp = ObjectProperty(None)
+    inputerror = StringProperty("")
 
     def sjekk_siste_kamp(self):
         if self.spelar == 'Martin':
@@ -69,6 +72,35 @@ class legg_inn_bets(Screen):
         
         sheets[self.spelar_idx].insert_row(new_data, self.row+1)
         sheets[self.spelar_idx].delete_rows(self.row+2)
+
+    def validate_submit(self):
+        self.odds.text = self.odds.text.replace(',', '.')
+        self.innsats.text = self.innsats.text.replace(',', '.')
+
+        if self.ids.runde.text == "Velg runde":
+            self.inputerror = "Velg runde"
+        elif self.ids.kamp.text == "Velg kamp":
+            self.inputerror = "Velg kamp"
+        elif self.dato.text == "" or self.dato.text == "None":
+            self.inputerror = "Fyll inn dato"
+        elif self.heimelag.text == "" or self.heimelag.text == "None":
+            self.inputerror = "Fyll inn heimelag"
+        elif self.bortelag.text == "" or self.bortelag.text == "None":
+            self.inputerror = "Fyll inn bortelag"
+        elif self.bet.text == "" or self.bet.text == "None":
+            self.inputerror = "Fyll inn bet"
+        elif self.odds.text == "" or self.odds.text == "None":
+            self.inputerror = "Fyll inn odds"
+        elif not sjekk_float(self.odds.text):
+            self.inputerror = "Odds er ikkje eit tal"
+        elif self.innsats.text == "" or self.odds.text == "None":
+            self.inputerror = "Fyll inn innsats"
+        elif not sjekk_float(self.innsats.text):
+            self.inputerror = "Innsats er ikkje eit tal"
+        else:
+            self.inputerror = ""
+            self.submit()
+
 
 class legg_inn_resultat(Screen):
     pass

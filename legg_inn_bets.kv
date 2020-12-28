@@ -59,10 +59,11 @@
 
         TextInput:
             id: dato
-            multinline:False
+            multiline:False
             pos_hint: {'x': 0.5, 'center_y': .8}
             size_hint: 0.2, 0.05
             hint_text: "" if root.row is None else root.data[root.spelar_idx]['Dato'][root.row]
+            on_text_validate: heimelag.focus = True
 
         Label:
             text: "Heimelag: "
@@ -71,10 +72,11 @@
 
         TextInput:
             id: heimelag
-            multinline: False
+            multiline: False
             pos_hint: {'x': 0.5, 'center_y': .7}
             size_hint: 0.2, 0.05
             hint_text: "" if root.row is None else root.data[root.spelar_idx]['Heimelag'][root.row]
+            on_text_validate: bortelag.focus = True
 
         Label:
             text: "Bortelag: "
@@ -83,10 +85,11 @@
 
         TextInput:
             id: bortelag
-            multinline:False
+            multiline:False
             pos_hint: {'x': 0.5, 'center_y': .6}
             size_hint: 0.2, 0.05
             hint_text: "" if root.row is None else root.data[root.spelar_idx]['Bortelag'][root.row]
+            on_text_validate: bet.focus = True
 
         Label:
             text: "Bet: "
@@ -95,10 +98,11 @@
 
         TextInput:
             id: bet
-            multinline:False
+            multiline:False
             pos_hint: {'x': 0.5, 'center_y': .5}
             size_hint: 0.2, 0.05
             hint_text: "" if root.row is None else root.data[root.spelar_idx]['Bet'][root.row]
+            on_text_validate: odds.focus = True
 
         Label:
             text: "Odds: "
@@ -107,10 +111,11 @@
         
         TextInput:
             id: odds
-            multinline:False
+            multiline:False
             pos_hint: {'x': 0.5, 'center_y': .4}
             size_hint: 0.2, 0.05
             hint_text: "" if root.row is None else root.data[root.spelar_idx]['Odds'][root.row]
+            on_text_validate: innsats.focus = True
 
         Label:
             text: "Innsats: "
@@ -119,20 +124,29 @@
 
         TextInput:
             id: innsats
-            multinline:False
+            multiline:False
             pos_hint: {'x': 0.5, 'center_y': .3}
             size_hint: 0.2, 0.05
             hint_text: "" if root.row is None else root.data[root.spelar_idx]['Innsats'][root.row]
+
+        Label:
+            id: errorinfo
+            text: root.inputerror
+            pos_hint: {'x': 0.3, 'center_y': .2}
+            size_hint: 0.2, 0.05
 
         Button:
             text:"Submit"
             pos_hint: {'x': 0.5, 'y': .1}
             size_hint: 0.2, 0.05
-            on_press: root.submit()
+            #on_press: root.submit()
+            on_press: root.validate_submit()
             background_color: 0.32, 0.55, 0.516, 1
 
         Button:
             text: 'Tilbake'
             background_color: 0.32, 0.55, 0.516, 1
             size_hint: 0.1, 0.1
-            on_press: root.manager.current = 'start'
+            on_press:
+                root.manager.transition.direction = 'right'
+                root.manager.current = 'start'
