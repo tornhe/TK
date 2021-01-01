@@ -1,5 +1,53 @@
 #:kivy 1.11.1
-<Start_menu>:
+<MyScreenManager>:
+    VelgSpelar:
+        id: velg_spelar
+    HovudMeny:
+        id: hovudmeny
+    LeggInnBets:
+        id: legg_inn_bets
+    LeggInnResultat:
+
+<VelgSpelar>:
+    canvas.before:
+        Color:
+            rgb: 0.25, 0.655, 0.596, 0.5
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    cols: 1
+    rows: 1
+
+    BoxLayout:
+        orientation: 'vertical'
+        Image:
+            source: 'logo3.png'
+            size: self.parent.size
+            stretch: True
+            y: self.parent.y + .5* self.parent.height -.5 * self.parent.width/self.image_ratio
+            x: self.parent.x
+            width: self.parent.width
+            keep_ratio: True
+            allow_stretch: True
+
+        FloatLayout:
+            Label:
+                text: "Lykke til, jævlar!"
+                font_size: 30
+                pos_hint: {'center_x': 0.5, 'center_y': 0.2}
+
+            Spinner:
+                size_hint: 0.15, 0.15
+                pos_hint: {'center_x': 0.5, 'center_y': .9}
+                text: "Velg spelar"
+                values: 'Martin', 'Sindre', 'Tor'
+                background_color: 0.32, 0.55, 0.516, 1
+                on_text: root.parent.spelar = self.text
+                on_text: root.parent.sjekk_siste_kamp()
+                on_text: root.manager.current = '_hovudmeny_'
+                
+<HovudMeny>:
+    name: '_hovudmeny_'
     canvas.before:
         Color:
             rgb: 0.25, 0.655, 0.596, 0.5
@@ -17,8 +65,6 @@
             stretch: True #keep this one as well :)
             y: self.parent.y + .5* self.parent.height -.5 * self.parent.width/self.image_ratio
             x: self.parent.x
-            #heigth: self.parent.width/self.image_ratio
-            #heigth: self.parent.height
             width: self.parent.width
             keep_ratio: True
             allow_stretch: True
@@ -26,18 +72,17 @@
         FloatLayout:
             Button:
                 text: 'Legg inn nye bets'
-                #background_color: 0.1, 0.5, 0.6, 1
                 background_color: 0.32, 0.55, 0.516, 1
                 size_hint: 0.4, 0.2
                 pos_hint: {'center_x': 0.5, 'center_y': 0.9}
-                on_press: root.manager.current = 'legg inn bets'
+                on_press: root.manager.current = '_legg_inn_bets_'
 
             Button:
                 text: 'Legg inn resultat'
                 background_color: 0.32, 0.55, 0.516, 1
                 pos_hint: {'center_x': 0.5, 'center_y': 0.7}
                 size_hint: 0.4, 0.2
-                on_press: root.manager.current = 'legg inn resultat'
+                on_press: root.manager.current = '_legg_inn_resultat_'
             Button:
                 text: 'Sjao resultat'
                 background_color: 0.32, 0.55, 0.516, 1
@@ -50,7 +95,8 @@
                 pos_hint: {'center_x': 0.5, 'center_y': 0.3}
 
 
-<legg_inn_resultat>:
+<LeggInnResultat>:
+    name: '_legg_inn_resultat_'
     canvas.before:
         Color:
             rgb: 0.25, 0.655, 0.596, 0.5
@@ -77,5 +123,5 @@
             size_hint: 0.1, 0.1
             background_color: 0.32, 0.55, 0.516, 1
 
-            on_press: root.manager.current = 'start'
+            on_press: root.manager.current = '_hovudmeny_'
 
