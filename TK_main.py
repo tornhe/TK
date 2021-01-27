@@ -9,6 +9,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import Screen, ScreenManager
 from kivy.app import App
 from kivy.lang import Builder
+from kivy.uix.label import Label
 from kivy.properties import ObjectProperty
 from kivy.properties import StringProperty
 from kivy.properties import NumericProperty
@@ -48,9 +49,10 @@ class MyScreenManager(ScreenManager):
     spelar_idx = NumericProperty(None)
     siste_runde = ObjectProperty(None)
     siste_kamp = ObjectProperty(None)
+    siste_resultat = ObjectProperty(None)
     data = ObjectProperty(df)
-    runde = NumericProperty(None)
-    kamp = ObjectProperty(None)
+    runde = ObjectProperty("1")
+    kamp = ObjectProperty("1")
     heimelag = ObjectProperty(None)
     bortelag = ObjectProperty(None)
     bet = ObjectProperty(None)
@@ -58,6 +60,7 @@ class MyScreenManager(ScreenManager):
     innsats = NumericProperty(None)
     dato = ObjectProperty(None)
     row = ObjectProperty(0)
+    bet_inn = ObjectProperty(None)
 
     #def __init__(self, **kwargs):
      #   super(MyScreenManager, self).__init__(**kwargs)
@@ -74,7 +77,6 @@ class MyScreenManager(ScreenManager):
         sheets[self.spelar_idx].insert_row(new_data, self.row+2)
         sheets[self.spelar_idx].delete_rows(self.row+3)
 
-
     def sjekk_siste_kamp(self):
         if self.spelar == 'Martin':
             self.spelar_idx = 0
@@ -83,9 +85,40 @@ class MyScreenManager(ScreenManager):
         elif self.spelar == 'Tor':
             self.spelar_idx = 2
 
-        siste_rad = df[self.spelar_idx][df[self.spelar_idx]['Dato'] == "None"].index[0]
-        self.siste_runde = df[self.spelar_idx]['Runde'][siste_rad]
-        self.siste_kamp = df[self.spelar_idx]['Kamp'][siste_rad]
+        siste_rad_kamp = df[self.spelar_idx][df[self.spelar_idx]['Dato'] == "None"].index[0]
+        siste_rad_resultat = df[self.spelar_idx][df[self.spelar_idx]['Bet inn?'] == "None"].index[0]
+
+        self.siste_runde = df[self.spelar_idx]['Runde'][siste_rad_kamp]
+        self.siste_kamp = df[self.spelar_idx]['Kamp'][siste_rad_kamp]
+
+        if siste_rad_kamp == siste_rad_resultat:
+            self.siste_resultat = "Alle resultat lagt inn. Applaus!"
+        elif siste_rad_kamp > siste_rad_resultat:
+            self.siste_resultat = str(self.spelar) + " sitt siste resultat er " + str(df[self.spelar_idx]['Kamp'][siste_rad_resultat]) + "i runde " + str(df[self.spelar_idx]['Runde'][siste_rad_resultat])
+        else:
+            self.siste_resultat = "Noke er feil med kampar/resultat. Sjekk excelfila."
+    
+
+    def neste_kamp(self):
+        if int(self.kamp) < 5:
+            self.kamp = str(int(self.kamp) + 1)
+        elif int(self.kamp) == 5 and int(self.runde) != int(df[self.spelar_idx]['Runde'].max()):
+            self.kamp = 1
+            self.runde = str(int(self.runde) + 1)
+
+        return str(self.runde), str(self.kamp)
+
+    def forrige_kamp(self):
+        if int(self.kamp) > 1:
+            self.kamp = str(int(self.kamp) - 1)
+        elif int(self.kamp) == 1 and int(self.runde) == 1:
+            self.kamp = 1
+            self.runde = 1
+        else:
+            self.kamp = 5
+            self.runde = str(int(self.runde) - 1)
+            
+        return str(self.runde), str(self.kamp)
 
 
     def validate_submit(self):

@@ -76,8 +76,11 @@
                 background_color: 0.32, 0.55, 0.516, 1
                 size_hint: 0.4, 0.2
                 pos_hint: {'center_x': 0.5, 'center_y': 0.9}
+
                 on_press:
                     root.manager.transition.direction = 'left'
+                    root.manager.current = '_legg_inn_bets_'
+                    root.runde, root.kamp = "1", "1"
                     root.manager.current = '_legg_inn_bets_'
 
             Button:
@@ -102,7 +105,11 @@
 
 
 <LeggInnResultat>:
+    runde: runde
+    kamp: kamp
     name: '_legg_inn_resultat_'
+    bet_inn: bet_inn
+
     canvas.before:
         Color:
             rgb: 0.25, 0.655, 0.596, 0.5
@@ -110,25 +117,120 @@
             pos: self.pos
             size: self.size
     cols: 1
-    rows: 1
 
-    BoxLayout:
-        orientation: 'vertical'
-        Image:
-            source: 'logo3.png'
-            size: self.parent.size
-            stretch: True
-            y: self.parent.y + .5* self.parent.height -.5 * self.parent.width/self.image_ratio
-            x: self.parent.x
-            width: self.parent.width
-            keep_ratio: True
-            allow_stretch: True
+    FloatLayout:
+        Label: 
+            text: "Velg runde:"
+            pos_hint: {'x': 0.0, 'y': .88}
+            size_hint: 0.2, 0.05
+
+        Label: 
+            text: "Velg kamp: "
+            pos_hint: {'x': 0.15, 'y': .88}
+            size_hint: 0.2, 0.05
+
+        Spinner:
+            id: runde
+            size_hint: 0.15, 0.07
+            pos_hint: {'x': 0.02, 'y': .8}
+            text: '1'
+            values: '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'
+            background_color: 0.32, 0.55, 0.516, 1
+            on_text: root.parent.runde = self.text
+            on_text: root.parent.update_table()
+
+        Spinner:
+            id: kamp
+            size_hint: 0.15, 0.07
+            pos_hint: {'x': 0.18, 'y': .8}
+            text: '1'
+            values: '1', '2', '3', '4', '5'
+            background_color: 0.32, 0.55, 0.516, 1
+            on_text: root.parent.kamp = self.text
+            on_text: root.parent.update_table()
+            
+        Label:
+            text: "" if root.parent is None else root.parent.siste_resultat
+            pos_hint: {'x': 0.45, 'y': .9}
+            size_hint: 0.2, 0.05
+
+        Label:
+            text: "" if root.parent is None else "Dato:           " + root.parent.data[root.parent.spelar_idx]['Dato'][root.parent.row]
+            text_size: self.size
+            font_size: 20
+            pos_hint: {'x': 0.4, 'center_y': .6}
+            size_hint: 1, 0.05
+        
+        Label:
+            text: "" if root.parent is None else "Heimelag:  " + root.parent.data[root.parent.spelar_idx]['Heimelag'][root.parent.row]
+            text_size: self.size
+            font_size: 20
+            pos_hint: {'x': 0.4, 'center_y': .55}
+            size_hint: 1, 0.05
+
+        Label:
+            text: "" if root.parent is None else "Bortelag:    " + root.parent.data[root.parent.spelar_idx]['Bortelag'][root.parent.row]
+            text_size: self.size
+            font_size: 20
+            pos_hint: {'x': 0.4, 'center_y': .5}
+            size_hint: 1, 0.05
+
+        Label:
+            text: "" if root.parent is None else "Bet:             " + root.parent.data[root.parent.spelar_idx]['Bet'][root.parent.row]
+            text_size: self.size
+            font_size: 20
+            pos_hint: {'x': 0.4, 'center_y': .45}
+            size_hint: 1, 0.05
+
+        Label:
+            text: "" if root.parent is None else "Odds:          " + root.parent.data[root.parent.spelar_idx]['Odds'][root.parent.row]
+            text_size: self.size
+            font_size: 20
+            pos_hint: {'x': 0.4, 'center_y': .4}
+            size_hint: 1, 0.05
+
+        Label:
+            text: "" if root.parent is None else "Innsats:      " + root.parent.data[root.parent.spelar_idx]['Innsats'][root.parent.row]
+            text_size: self.size
+            font_size: 20
+            pos_hint: {'x': 0.4, 'center_y': .35}
+            size_hint: 1, 0.05
+
+        Button:
+            text: 'Førre'
+            background_color: 0.32, 0.55, 0.516, 1
+            size_hint: 0.08, 0.065
+            pos_hint: {'right': 0.35, 'center_y': 0.5}
+            on_press: runde.text, kamp.text = root.parent.forrige_kamp()
+
+        Button:
+            text: 'Neste'
+            background_color: 0.32, 0.55, 0.516, 1
+            size_hint: 0.08, 0.065
+            pos_hint: {'x': 0.7, 'center_y': .5}
+            on_press: runde.text, kamp.text = root.parent.neste_kamp()
 
         Button:
             text: 'Tilbake'
-            size_hint: 0.1, 0.1
             background_color: 0.32, 0.55, 0.516, 1
+            size_hint: 0.1, 0.1
             on_press:
                 root.manager.transition.direction = 'right'
+                runde.text, kamp.text = root.parent.forrige_kamp()
                 root.manager.current = '_hovudmeny_'
+         
+        Label:
+            text: "Bet inn?"
+            font_size: 25
+            color: [0.074, 0.21, 0.18, 1]
+            pos_hint: {'x': 0.4, 'y': .2}
+            size_hint: .1, .1
+            pos: 400, 400
+            #pos_hint: {'x': 0.4, 'center_y': .24}
 
+        CheckBox:
+            id : bet_inn
+            group: 'bet'
+            pos_hint: {'x': 0.58, 'y': .22}
+            size_hint: .05, .05
+            color: [1, 0, 0, 1]
