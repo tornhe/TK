@@ -18,21 +18,31 @@
             size: self.size
 
     FloatLayout:
+        Label: 
+            text: "Velg runde:"
+            pos_hint: {'x': 0, 'y': .88}
+            size_hint: 0.2, 0.05
+
+        Label: 
+            text: "Velg kamp: "
+            pos_hint: {'x': 0.15, 'y': .88}
+            size_hint: 0.2, 0.05
+
         Spinner:
             id: runde
             size_hint: 0.15, 0.07
-            pos_hint: {'x': 0.02, 'y': .9}
-            text: "Velg runde"
+            pos_hint: {'x': 0.02, 'y': .8}
+            text: "1"
             values: '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'
             background_color: 0.32, 0.55, 0.516, 1
             on_text: root.parent.runde = self.text
             on_text: root.parent.update_table()
 
         Spinner:
-            id : kamp
+            id: kamp
             size_hint: 0.15, 0.07
-            pos_hint: {'x': 0.18, 'y': .9}
-            text: "Velg kamp"
+            pos_hint: {'x': 0.18, 'y': .8}
+            text: "1"
             values: '1', '2', '3', '4', '5'
             background_color: 0.32, 0.55, 0.516, 1
             on_text: root.parent.kamp = self.text
@@ -121,6 +131,20 @@
             size_hint: 0.15, 0.075
             on_press: root.parent.submit()
             background_color: 0.32, 0.55, 0.516, 1
+
+        Button:
+            text: 'Førre'
+            background_color: 0.32, 0.55, 0.516, 1
+            size_hint: 0.08, 0.065
+            pos_hint: {'right': 0.3, 'center_y': 0.5}
+            on_press: runde.text, kamp.text = root.parent.forrige_kamp()
+
+        Button:
+            text: 'Neste'
+            background_color: 0.32, 0.55, 0.516, 1
+            size_hint: 0.08, 0.065
+            pos_hint: {'x': 0.78, 'center_y': .5}
+            on_press: runde.text, kamp.text = root.parent.neste_kamp()
 
         Button:
             text: 'Tilbake'
