@@ -30,26 +30,50 @@ tor_data = data_to_df(tor_sheet)
 sheets = [martin_sheet, sindre_sheet, tor_sheet]
 df = [martin_data, sindre_data, tor_data]
 
-class Start_menu(Screen):
+class VelgSpelar(Screen):
     pass
 
-class legg_inn_bets(Screen):
-    spelar = ObjectProperty(None)
+class HovudMeny(Screen):
+    pass
+
+class LeggInnBets(Screen):
+    inputerror = StringProperty("")
+    
+class LeggInnResultat(Screen):
+    pass
+
+
+class MyScreenManager(ScreenManager):
+    spelar = StringProperty(None)
+    spelar_idx = NumericProperty(None)
+    siste_runde = ObjectProperty(None)
+    siste_kamp = ObjectProperty(None)
     data = ObjectProperty(df)
-    name = ObjectProperty(None)
-    runde = ObjectProperty(None)
+    runde = NumericProperty(None)
     kamp = ObjectProperty(None)
     heimelag = ObjectProperty(None)
     bortelag = ObjectProperty(None)
     bet = ObjectProperty(None)
-    odds = ObjectProperty(None)
-    innsats = ObjectProperty(None)
+    odds = NumericProperty(None)
+    innsats = NumericProperty(None)
     dato = ObjectProperty(None)
-    row = ObjectProperty(None)
-    spelar_idx = NumericProperty(None)
-    siste_runde = ObjectProperty(None)
-    siste_kamp = ObjectProperty(None)
-    inputerror = StringProperty("")
+    row = ObjectProperty(0)
+
+    #def __init__(self, **kwargs):
+     #   super(MyScreenManager, self).__init__(**kwargs)
+
+    def update_table(self):
+        if self.runde is not None and self.kamp is not None:
+            self.row = ((int(self.runde)) - 1) * 5 + int(self.kamp) - 1
+
+    def submit(self):
+        new_data = [self.ids.legg_inn_bets.ids.runde.text, self.ids.legg_inn_bets.ids.kamp.text, self.ids.legg_inn_bets.ids.dato.text, 
+                    self.ids.legg_inn_bets.ids.heimelag.text, self.ids.legg_inn_bets.ids.bortelag.text, self.ids.legg_inn_bets.ids.bet.text, 
+                    self.ids.legg_inn_bets.ids.odds.text, self.ids.legg_inn_bets.ids.innsats.text]
+
+        sheets[self.spelar_idx].insert_row(new_data, self.row+2)
+        sheets[self.spelar_idx].delete_rows(self.row+3)
+
 
     def sjekk_siste_kamp(self):
         if self.spelar == 'Martin':
@@ -63,15 +87,6 @@ class legg_inn_bets(Screen):
         self.siste_runde = df[self.spelar_idx]['Runde'][siste_rad]
         self.siste_kamp = df[self.spelar_idx]['Kamp'][siste_rad]
 
-    def update_table(self):
-        if self.runde is not None and self.kamp is not None:
-            self.row = ((int(self.runde)) - 1) * 5 + int(self.kamp)
-
-    def submit(self):
-        new_data = [self.runde, self.kamp, self.dato.text, self.heimelag.text, self.bortelag.text, self.bet.text, self.odds.text, self.innsats.text]
-        
-        sheets[self.spelar_idx].insert_row(new_data, self.row+1)
-        sheets[self.spelar_idx].delete_rows(self.row+2)
 
     def validate_submit(self):
         self.odds.text = self.odds.text.replace(',', '.')
@@ -107,11 +122,7 @@ class legg_inn_resultat(Screen):
 
 class TK_Main(App):
     def build(self):
-        sm = ScreenManager()
-        sm.add_widget(Start_menu(name='start'))
-        sm.add_widget(legg_inn_bets(name='legg inn bets'))
-        sm.add_widget(legg_inn_resultat(name='legg inn resultat'))
-        return sm
-    
+        return MyScreenManager()
+
 if __name__ == '__main__':
     TK_Main().run()

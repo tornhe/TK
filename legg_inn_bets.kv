@@ -1,12 +1,14 @@
 #:kivy 1.11.1
-<legg_inn_bets>: 
-    spelar: spelar
-    dato : dato
+<LeggInnBets>:
+    name: '_legg_inn_bets_'
+    dato: dato
     heimelag: heimelag
     bortelag: bortelag
     bet: bet
     odds: odds
     innsats: innsats
+    runde: runde
+    kamp: kamp
 
     canvas.before:
         Color:
@@ -17,39 +19,28 @@
 
     FloatLayout:
         Spinner:
-            id: spelar
-            size_hint: 0.15, 0.075
-            pos_hint: {'x': 0.05, 'y': .9}
-            text: "Velg spelar"
-            values: 'Martin', 'Sindre', 'Tor'
-            background_color: 0.32, 0.55, 0.516, 1
-            on_text: root.spelar = self.text
-            on_text: root.sjekk_siste_kamp()
-            
-
-        Spinner:
             id: runde
             size_hint: 0.15, 0.07
-            pos_hint: {'x': 0.05, 'y': .8}
+            pos_hint: {'x': 0.02, 'y': .9}
             text: "Velg runde"
             values: '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'
             background_color: 0.32, 0.55, 0.516, 1
-            on_text: root.runde = self.text
-            on_text: root.update_table()
+            on_text: root.parent.runde = self.text
+            on_text: root.parent.update_table()
 
         Spinner:
             id : kamp
             size_hint: 0.15, 0.07
-            pos_hint: {'x': 0.2, 'y': .8}
+            pos_hint: {'x': 0.18, 'y': .9}
             text: "Velg kamp"
             values: '1', '2', '3', '4', '5'
             background_color: 0.32, 0.55, 0.516, 1
-            on_text: root.kamp = self.text
-            on_text: root.update_table()
+            on_text: root.parent.kamp = self.text
+            on_text: root.parent.update_table()
 
         Label:
-            text: "" if root.spelar is None else spelar.text + " sin neste kamp er kamp " + str(root.siste_kamp) + " i runde " + str(root.siste_runde)
-            pos_hint: {'x': 0.4, 'y': .9}
+            text: "" if root.parent is None else root.parent.spelar + " sin neste kamp er kamp " + str(root.parent.siste_kamp) + " i runde " + str(root.parent.siste_runde)
+            pos_hint: {'x': 0.45, 'y': .9}
             size_hint: 0.2, 0.05
 
         Label:
@@ -62,8 +53,8 @@
             multiline:False
             pos_hint: {'x': 0.5, 'center_y': .8}
             size_hint: 0.2, 0.05
-            hint_text: "" if root.row is None else root.data[root.spelar_idx]['Dato'][root.row]
             on_text_validate: heimelag.focus = True
+            hint_text: "" if root.parent is None else root.parent.data[root.parent.spelar_idx]['Dato'][root.parent.row]
 
         Label:
             text: "Heimelag: "
@@ -75,8 +66,8 @@
             multiline: False
             pos_hint: {'x': 0.5, 'center_y': .7}
             size_hint: 0.2, 0.05
-            hint_text: "" if root.row is None else root.data[root.spelar_idx]['Heimelag'][root.row]
             on_text_validate: bortelag.focus = True
+            hint_text: "" if root.parent is None else root.parent.data[root.parent.spelar_idx]['Heimelag'][root.parent.row]
 
         Label:
             text: "Bortelag: "
@@ -88,8 +79,8 @@
             multiline:False
             pos_hint: {'x': 0.5, 'center_y': .6}
             size_hint: 0.2, 0.05
-            hint_text: "" if root.row is None else root.data[root.spelar_idx]['Bortelag'][root.row]
             on_text_validate: bet.focus = True
+            hint_text: "" if root.parent is None else root.parent.data[root.parent.spelar_idx]['Bortelag'][root.parent.row]
 
         Label:
             text: "Bet: "
@@ -101,8 +92,8 @@
             multiline:False
             pos_hint: {'x': 0.5, 'center_y': .5}
             size_hint: 0.2, 0.05
-            hint_text: "" if root.row is None else root.data[root.spelar_idx]['Bet'][root.row]
             on_text_validate: odds.focus = True
+            hint_text: "" if root.parent is None else root.parent.data[root.parent.spelar_idx]['Bet'][root.parent.row]
 
         Label:
             text: "Odds: "
@@ -114,8 +105,8 @@
             multiline:False
             pos_hint: {'x': 0.5, 'center_y': .4}
             size_hint: 0.2, 0.05
-            hint_text: "" if root.row is None else root.data[root.spelar_idx]['Odds'][root.row]
             on_text_validate: innsats.focus = True
+            hint_text: "" if root.parent is None else root.parent.data[root.parent.spelar_idx]['Odds'][root.parent.row]
 
         Label:
             text: "Innsats: "
@@ -127,7 +118,7 @@
             multiline:False
             pos_hint: {'x': 0.5, 'center_y': .3}
             size_hint: 0.2, 0.05
-            hint_text: "" if root.row is None else root.data[root.spelar_idx]['Innsats'][root.row]
+            hint_text: "" if root.parent is None else root.parent.data[root.parent.spelar_idx]['Innsats'][root.parent.row]
 
         Label:
             id: errorinfo
@@ -138,10 +129,10 @@
 
         Button:
             text:"Submit"
-            pos_hint: {'x': 0.5, 'y': .1}
-            size_hint: 0.2, 0.05
-            #on_press: root.submit()
-            on_press: root.validate_submit()
+            pos_hint: {'x': 0.5, 'y': .15}
+            size_hint: 0.15, 0.075
+            #on_press: root.parent.submit()
+            on_press: root.parent.validate_submit()
             background_color: 0.32, 0.55, 0.516, 1
 
         Button:
@@ -150,4 +141,4 @@
             size_hint: 0.1, 0.1
             on_press:
                 root.manager.transition.direction = 'right'
-                root.manager.current = 'start'
+                root.manager.current = '_hovudmeny_'
