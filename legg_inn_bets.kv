@@ -141,9 +141,9 @@
             text:"Submit"
             pos_hint: {'x': 0.5, 'y': .15}
             size_hint: 0.15, 0.075
-            #on_press: root.parent.submit()
-            on_press: root.parent.validate_submit()
             background_color: 0.32, 0.55, 0.516, 1
+            on_press:
+                root.parent.validate_submit()
 
         Button:
             text: 'Førre'

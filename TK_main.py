@@ -122,28 +122,28 @@ class MyScreenManager(ScreenManager):
 
 
     def validate_submit(self):
-        self.odds.text = self.odds.text.replace(',', '.')
-        self.innsats.text = self.innsats.text.replace(',', '.')
+        self.ids.legg_inn_bets.ids.odds.text = self.ids.legg_inn_bets.ids.odds.text.replace(',', '.')
+        self.ids.legg_inn_bets.ids.innsats.text = self.ids.legg_inn_bets.ids.innsats.text.replace(',', '.')
 
-        if self.ids.runde.text == "Velg runde":
+        if self.ids.legg_inn_bets.ids.runde.text == "Velg runde":
             self.inputerror = "Velg runde"
-        elif self.ids.kamp.text == "Velg kamp":
+        elif self.ids.legg_inn_bets.ids.kamp.text == "Velg kamp":
             self.inputerror = "Velg kamp"
-        elif self.dato.text == "" or self.dato.text == "None":
+        elif self.ids.legg_inn_bets.ids.dato.text == "" or self.ids.legg_inn_bets.ids.dato.text == "None":
             self.inputerror = "Fyll inn dato"
-        elif self.heimelag.text == "" or self.heimelag.text == "None":
+        elif self.ids.legg_inn_bets.ids.heimelag.text == "" or self.ids.legg_inn_bets.ids.heimelag.text == "None":
             self.inputerror = "Fyll inn heimelag"
-        elif self.bortelag.text == "" or self.bortelag.text == "None":
+        elif self.ids.legg_inn_bets.ids.bortelag.text == "" or self.ids.legg_inn_bets.ids.bortelag.text == "None":
             self.inputerror = "Fyll inn bortelag"
-        elif self.bet.text == "" or self.bet.text == "None":
+        elif self.ids.legg_inn_bets.ids.bet.text == "" or self.ids.legg_inn_bets.ids.bet.text == "None":
             self.inputerror = "Fyll inn bet"
-        elif self.odds.text == "" or self.odds.text == "None":
+        elif self.ids.legg_inn_bets.ids.odds.text == "" or self.ids.legg_inn_bets.ids.odds.text == "None":
             self.inputerror = "Fyll inn odds"
-        elif not sjekk_float(self.odds.text):
+        elif not sjekk_float(self.ids.legg_inn_bets.ids.odds.text):
             self.inputerror = "Odds er ikkje eit tal"
-        elif self.innsats.text == "" or self.odds.text == "None":
+        elif self.ids.legg_inn_bets.ids.innsats.text == "" or self.ids.legg_inn_bets.ids.odds.text == "None":
             self.inputerror = "Fyll inn innsats"
-        elif not sjekk_float(self.innsats.text):
+        elif not sjekk_float(self.ids.legg_inn_bets.ids.innsats.text):
             self.inputerror = "Innsats er ikkje eit tal"
         else:
             self.inputerror = ""
