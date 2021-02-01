@@ -41,7 +41,6 @@ class LeggInnBets(Screen):
 class LeggInnResultat(Screen):
     pass
 
-
 class MyScreenManager(ScreenManager):
     spelar = StringProperty(None)
     spelar_idx = NumericProperty(None)
@@ -58,10 +57,8 @@ class MyScreenManager(ScreenManager):
     innsats = NumericProperty(None)
     dato = ObjectProperty(None)
     row = ObjectProperty(0)
-    bet_inn = ObjectProperty(None)
-
-    #def __init__(self, **kwargs):
-     #   super(MyScreenManager, self).__init__(**kwargs)
+    bet_inn_ja = ObjectProperty(None)
+    bet_inn_nei = ObjectProperty(None)
 
     def update_table(self):
         if self.runde is not None and self.kamp is not None:
@@ -95,7 +92,6 @@ class MyScreenManager(ScreenManager):
             self.siste_resultat = str(self.spelar) + " sitt siste resultat er " + str(df[self.spelar_idx]['Kamp'][siste_rad_resultat]) + "i runde " + str(df[self.spelar_idx]['Runde'][siste_rad_resultat])
         else:
             self.siste_resultat = "Noke er feil med kampar/resultat. Sjekk excelfila."
-    
 
     def neste_kamp(self):
         if int(self.kamp) < 5:
@@ -117,6 +113,11 @@ class MyScreenManager(ScreenManager):
             self.runde = str(int(self.runde) - 1)
             
         return str(self.runde), str(self.kamp)
+    
+    def legg_inn_resultat(self):
+        if self.bet_inn_ja.active:
+            print(self.runde)
+            #df[self.spelar_idx]['Runde']
 
 class TK_Main(App):
     def build(self):
