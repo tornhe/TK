@@ -1,3 +1,4 @@
+#:include legg_inn_bets.kv
 #:kivy 1.11.1
 <MyScreenManager>:
     VelgSpelar:
@@ -75,14 +76,22 @@
                 background_color: 0.32, 0.55, 0.516, 1
                 size_hint: 0.4, 0.2
                 pos_hint: {'center_x': 0.5, 'center_y': 0.9}
-                on_press: root.runde, root.kamp = "1", "1"
-                on_press: root.manager.current = '_legg_inn_bets_'
+
+                on_press:
+                    root.manager.transition.direction = 'left'
+                    root.manager.current = '_legg_inn_bets_'
+                    root.runde, root.kamp = "1", "1"
+                    root.manager.current = '_legg_inn_bets_'
+
             Button:
                 text: 'Legg inn resultat'
                 background_color: 0.32, 0.55, 0.516, 1
                 pos_hint: {'center_x': 0.5, 'center_y': 0.7}
                 size_hint: 0.4, 0.2
-                on_press: root.manager.current = '_legg_inn_resultat_'
+                on_press:
+                    root.manager.transition.direction = 'left'
+                    root.manager.current = '_legg_inn_resultat_'
+
             Button:
                 text: 'Sjao resultat'
                 background_color: 0.32, 0.55, 0.516, 1
@@ -205,8 +214,10 @@
             text: 'Tilbake'
             background_color: 0.32, 0.55, 0.516, 1
             size_hint: 0.1, 0.1
-            on_press: runde.text, kamp.text = root.parent.forrige_kamp()
-            on_press: root.manager.current = '_hovudmeny_'     
+            on_press:
+                root.manager.transition.direction = 'right'
+                runde.text, kamp.text = root.parent.forrige_kamp()
+                root.manager.current = '_hovudmeny_'
          
         Label:
             text: "Bet inn?"
@@ -223,10 +234,3 @@
             pos_hint: {'x': 0.58, 'y': .22}
             size_hint: .05, .05
             color: [1, 0, 0, 1]
-
-        CheckBox:
-            #id : bet_inn
-            group: 'bet'
-            pos_hint: {'x': 0.5, 'y': .22}
-            size_hint: .05, .05
-            color: [0.6, 0.09, 0.03, 1]

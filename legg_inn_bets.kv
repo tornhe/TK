@@ -1,5 +1,5 @@
 #:kivy 1.11.1
-<LeggInnBets>: 
+<LeggInnBets>:
     name: '_legg_inn_bets_'
     dato: dato
     heimelag: heimelag
@@ -60,11 +60,12 @@
 
         TextInput:
             id: dato
-            multinline:False
+            multiline:False
             pos_hint: {'x': 0.5, 'center_y': .8}
             size_hint: 0.2, 0.05
+            on_text_validate: heimelag.focus = True
             hint_text: "" if root.parent is None else root.parent.data[root.parent.spelar_idx]['Dato'][root.parent.row]
-        
+
         Label:
             text: "Heimelag: "
             pos_hint: {'x': 0.3, 'center_y': .7}
@@ -72,9 +73,10 @@
 
         TextInput:
             id: heimelag
-            multinline: False
+            multiline: False
             pos_hint: {'x': 0.5, 'center_y': .7}
             size_hint: 0.2, 0.05
+            on_text_validate: bortelag.focus = True
             hint_text: "" if root.parent is None else root.parent.data[root.parent.spelar_idx]['Heimelag'][root.parent.row]
 
         Label:
@@ -84,9 +86,10 @@
 
         TextInput:
             id: bortelag
-            multinline:False
+            multiline:False
             pos_hint: {'x': 0.5, 'center_y': .6}
             size_hint: 0.2, 0.05
+            on_text_validate: bet.focus = True
             hint_text: "" if root.parent is None else root.parent.data[root.parent.spelar_idx]['Bortelag'][root.parent.row]
 
         Label:
@@ -96,9 +99,10 @@
 
         TextInput:
             id: bet
-            multinline:False
+            multiline:False
             pos_hint: {'x': 0.5, 'center_y': .5}
             size_hint: 0.2, 0.05
+            on_text_validate: odds.focus = True
             hint_text: "" if root.parent is None else root.parent.data[root.parent.spelar_idx]['Bet'][root.parent.row]
 
         Label:
@@ -108,9 +112,10 @@
         
         TextInput:
             id: odds
-            multinline:False
+            multiline:False
             pos_hint: {'x': 0.5, 'center_y': .4}
             size_hint: 0.2, 0.05
+            on_text_validate: innsats.focus = True
             hint_text: "" if root.parent is None else root.parent.data[root.parent.spelar_idx]['Odds'][root.parent.row]
 
         Label:
@@ -120,17 +125,25 @@
 
         TextInput:
             id: innsats
-            multinline:False
+            multiline:False
             pos_hint: {'x': 0.5, 'center_y': .3}
             size_hint: 0.2, 0.05
             hint_text: "" if root.parent is None else root.parent.data[root.parent.spelar_idx]['Innsats'][root.parent.row]
+
+        Label:
+            id: errorinfo
+            italic: True
+            text: root.inputerror
+            pos_hint: {'x': 0.5, 'center_y': .2}
+            size_hint: 0.2, 0.05
 
         Button:
             text:"Submit"
             pos_hint: {'x': 0.5, 'y': .15}
             size_hint: 0.15, 0.075
-            on_press: root.parent.submit()
             background_color: 0.32, 0.55, 0.516, 1
+            on_press:
+                root.parent.validate_submit()
 
         Button:
             text: 'Førre'
@@ -150,4 +163,6 @@
             text: 'Tilbake'
             background_color: 0.32, 0.55, 0.516, 1
             size_hint: 0.1, 0.1
-            on_press: root.manager.current = '_hovudmeny_'
+            on_press:
+                root.manager.transition.direction = 'right'
+                root.manager.current = '_hovudmeny_'
