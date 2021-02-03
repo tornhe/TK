@@ -13,8 +13,10 @@ from kivy.uix.label import Label
 from kivy.properties import ObjectProperty
 from kivy.properties import StringProperty
 from kivy.properties import NumericProperty
+from kivy.uix.popup import Popup
 from gdrive import load, data_to_df
 
+from hjelpefunk import*
 Builder.load_file('legg_inn_bets.kv')
 
 martin_sheet = load('Martin')
@@ -36,7 +38,7 @@ class HovudMeny(Screen):
     pass
 
 class LeggInnBets(Screen):
-    pass
+    inputerror = StringProperty("")
     
 class LeggInnResultat(Screen):
     pass
@@ -118,6 +120,39 @@ class MyScreenManager(ScreenManager):
         if self.bet_inn_ja.active:
             print(self.runde)
             #df[self.spelar_idx]['Runde']
+
+
+    def validate_submit(self):
+        self.ids.legg_inn_bets.ids.odds.text = self.ids.legg_inn_bets.ids.odds.text.replace(',', '.')
+        self.ids.legg_inn_bets.ids.innsats.text = self.ids.legg_inn_bets.ids.innsats.text.replace(',', '.')
+
+        if self.ids.legg_inn_bets.ids.runde.text == "Velg runde":
+            self.inputerror = "Velg runde"
+        elif self.ids.legg_inn_bets.ids.kamp.text == "Velg kamp":
+            self.inputerror = "Velg kamp"
+        elif self.ids.legg_inn_bets.ids.dato.text == "" or self.ids.legg_inn_bets.ids.dato.text == "None":
+            self.inputerror = "Fyll inn dato"
+        elif self.ids.legg_inn_bets.ids.heimelag.text == "" or self.ids.legg_inn_bets.ids.heimelag.text == "None":
+            self.inputerror = "Fyll inn heimelag"
+        elif self.ids.legg_inn_bets.ids.bortelag.text == "" or self.ids.legg_inn_bets.ids.bortelag.text == "None":
+            self.inputerror = "Fyll inn bortelag"
+        elif self.ids.legg_inn_bets.ids.bet.text == "" or self.ids.legg_inn_bets.ids.bet.text == "None":
+            self.inputerror = "Fyll inn bet"
+        elif self.ids.legg_inn_bets.ids.odds.text == "" or self.ids.legg_inn_bets.ids.odds.text == "None":
+            self.inputerror = "Fyll inn odds"
+        elif not sjekk_float(self.ids.legg_inn_bets.ids.odds.text):
+            self.inputerror = "Odds er ikkje eit tal"
+        elif self.ids.legg_inn_bets.ids.innsats.text == "" or self.ids.legg_inn_bets.ids.odds.text == "None":
+            self.inputerror = "Fyll inn innsats"
+        elif not sjekk_float(self.ids.legg_inn_bets.ids.innsats.text):
+            self.inputerror = "Innsats er ikkje eit tal"
+        else:
+            self.inputerror = ""
+            self.submit()
+
+
+class legg_inn_resultat(Screen):
+    pass
 
 class TK_Main(App):
     def build(self):

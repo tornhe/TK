@@ -2,4 +2,9 @@ credentials.json
 .vscode/
 TK_env/
 __pycache__/
+<<<<<<< HEAD
+.idea/
+venv/
+=======
 testing.ipynb
+>>>>>>> origin/main
