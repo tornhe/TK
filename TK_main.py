@@ -61,6 +61,7 @@ class MyScreenManager(ScreenManager):
     dato = ObjectProperty(None)
     row = ObjectProperty(0)
     bet_inn = ObjectProperty(None)
+    bet_ut = ObjectProperty(None)
 
     #def __init__(self, **kwargs):
      #   super(MyScreenManager, self).__init__(**kwargs)
@@ -94,7 +95,7 @@ class MyScreenManager(ScreenManager):
         if siste_rad_kamp == siste_rad_resultat:
             self.siste_resultat = "Alle resultat lagt inn. Applaus!"
         elif siste_rad_kamp > siste_rad_resultat:
-            self.siste_resultat = str(self.spelar) + " sitt siste resultat er " + str(df[self.spelar_idx]['Kamp'][siste_rad_resultat]) + "i runde " + str(df[self.spelar_idx]['Runde'][siste_rad_resultat])
+            self.siste_resultat = str(self.spelar) + " sitt siste resultat er kamp " + str(df[self.spelar_idx]['Kamp'][siste_rad_resultat]) + " i runde " + str(df[self.spelar_idx]['Runde'][siste_rad_resultat])
         else:
             self.siste_resultat = "Noke er feil med kampar/resultat. Sjekk excelfila."
     
@@ -149,7 +150,32 @@ class MyScreenManager(ScreenManager):
             self.inputerror = ""
             self.submit()
 
+    def bet_inn_ut(self, value):
+        if(value == 0):
+            sheets[self.spelar_idx].update_cell(self.row+2, 9, "Nei")
+        if(value == 1):
+            sheets[self.spelar_idx].update_cell(self.row+2, 9, "Ja")
 
+    def sjekk_inn_ut(self):
+        if(df[self.spelar_idx]['Bet inn?'][self.row+2] == "Ja"):
+            self.ids.bet_inn.active = True
+        elif(df[self.spelar_idx]['Bet inn?'][self.row+2] == "Nei"):
+            self.ids.bet_ut.active = True
+        else:
+            self.ids.bet_inn.active = False
+            self.ids.bet_ut.active = False
+
+    def sjekk_inn(self):
+        if (df[self.spelar_idx]['Bet inn?'][self.row + 2] == "Ja"):
+            return True
+        else:
+            return False
+
+    def sjekk_ut(self):
+        if (df[self.spelar_idx]['Bet inn?'][self.row + 2] == "Nei"):
+            return True
+        else:
+            return False
 class legg_inn_resultat(Screen):
     pass
 
