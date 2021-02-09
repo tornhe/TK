@@ -156,23 +156,16 @@ class MyScreenManager(ScreenManager):
         if(value == 1):
             sheets[self.spelar_idx].update_cell(self.row+2, 9, "Ja")
 
-    def sjekk_inn_ut(self):
-        if(df[self.spelar_idx]['Bet inn?'][self.row+2] == "Ja"):
-            self.ids.bet_inn.active = True
-        elif(df[self.spelar_idx]['Bet inn?'][self.row+2] == "Nei"):
-            self.ids.bet_ut.active = True
-        else:
-            self.ids.bet_inn.active = False
-            self.ids.bet_ut.active = False
-
     def sjekk_inn(self):
-        if (df[self.spelar_idx]['Bet inn?'][self.row + 2] == "Ja"):
+        if (df[self.spelar_idx]['Bet inn?'][self.row] == "Ja"):
+            print("True")
             return True
         else:
+            print("False")
             return False
 
     def sjekk_ut(self):
-        if (df[self.spelar_idx]['Bet inn?'][self.row + 2] == "Nei"):
+        if (df[self.spelar_idx]['Bet inn?'][self.row] == "Nei"):
             return True
         else:
             return False

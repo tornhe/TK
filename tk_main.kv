@@ -89,6 +89,8 @@
                 size_hint: 0.4, 0.2
                 on_press:
                     root.manager.transition.direction = 'left'
+                    root.parent.bet_inn = root.parent.sjekk_inn()
+                    root.parent.bet_ut = root.parent.sjekk_ut()
                     root.manager.current = '_legg_inn_resultat_'
 
             Button:
@@ -136,8 +138,11 @@
             text: '1'
             values: '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'
             background_color: 0.32, 0.55, 0.516, 1
-            on_text: root.parent.runde = self.text
-            on_text: root.parent.update_table()
+            on_text:
+                root.parent.runde = self.text
+                root.parent.update_table()
+                bet_inn.active = root.parent.sjekk_inn()
+                bet_ut.active = root.parent.sjekk_ut()
 
         Spinner:
             id: kamp
@@ -146,8 +151,11 @@
             text: '1'
             values: '1', '2', '3', '4', '5'
             background_color: 0.32, 0.55, 0.516, 1
-            on_text: root.parent.kamp = self.text
-            on_text: root.parent.update_table()
+            on_text:
+                root.parent.kamp = self.text
+                root.parent.update_table()
+                bet_inn.active = root.parent.sjekk_inn()
+                bet_ut.active = root.parent.sjekk_ut()
             
         Label:
             text: "" if root.parent is None else root.parent.siste_resultat
@@ -242,7 +250,7 @@
             pos_hint: {'x': 0.45, 'y': .22}
             size_hint: .05, .05
             color: [1, 0, 0, 1]
-            active: False if root.parent is None else root.parent.sjekk_inn()
+            active: bet_inn
             on_press: root.parent.bet_inn_ut(1)
 
         Label:
@@ -257,7 +265,7 @@
             pos_hint: {'x': 0.55, 'y': .22}
             size_hint: .05, .05
             color: [1, 0, 0, 1]
-            active: False if root.parent is None else root.parent.sjekk_ut()
+            active: bet_ut
             on_press: root.parent.bet_inn_ut(0)
 
         Label:
