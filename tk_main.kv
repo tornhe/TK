@@ -8,6 +8,7 @@
     LeggInnBets:
         id: legg_inn_bets
     LeggInnResultat:
+        id: legg_inn_resultat
 
 <VelgSpelar>:
     canvas.before:
@@ -233,4 +234,17 @@
             group: 'bet'
             pos_hint: {'x': 0.5, 'center_y': .24}
             size_hint: .05, .05
-            color: [1, 0, 0, 1]
+            color: [0.16, 0.54, 0.13, 1]
+            active: True if root.parent.row is 1
+            #True if root.parent.data[root.parent.spelar_idx]['Bet inn?'][root.parent.row] == "Ja" 
+            #False if root.parent is None else Tree if root.parent.data[root.parent.spelar_idx]['Bet inn?'][root.parent.row]
+            on_press: root.parent.legg_inn_resultat()
+
+        CheckBox:
+            id : bet_inn_nei
+            group: 'bet'
+            pos_hint: {'x': 0.56, 'center_y': .24}
+            size_hint: .05, .05
+            color: [1, 0.19, 0.19, 1]
+            #active: True   
+            on_press: root.parent.legg_inn_resultat()

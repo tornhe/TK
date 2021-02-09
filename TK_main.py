@@ -69,7 +69,7 @@ class MyScreenManager(ScreenManager):
     def submit(self):
         new_data = [self.ids.legg_inn_bets.ids.runde.text, self.ids.legg_inn_bets.ids.kamp.text, self.ids.legg_inn_bets.ids.dato.text, 
                     self.ids.legg_inn_bets.ids.heimelag.text, self.ids.legg_inn_bets.ids.bortelag.text, self.ids.legg_inn_bets.ids.bet.text, 
-                    self.ids.legg_inn_bets.ids.odds.text, self.ids.legg_inn_bets.ids.innsats.text]
+                    self.ids.legg_inn_bets.ids.odds.text, self.ids.legg_inn_bets.ids.innsats.text, "None"]
 
         sheets[self.spelar_idx].insert_row(new_data, self.row+2)
         sheets[self.spelar_idx].delete_rows(self.row+3)
@@ -117,10 +117,14 @@ class MyScreenManager(ScreenManager):
         return str(self.runde), str(self.kamp)
     
     def legg_inn_resultat(self):
-        if self.bet_inn_ja.active:
-            print(self.runde)
-            #df[self.spelar_idx]['Runde']
-
+        print(self.ids.legg_inn_resultat.bet_inn_ja.active)
+        print(self.ids.legg_inn_resultat.bet_inn_nei.active)
+       
+        #if self.bet_inn_ja.active:
+        #    print(self.runde)
+        #    print(df[self.spelar_idx]['Bet inn?'][self.row])
+        #elif self.bet_inn_nei.active:
+        #    print(df[self.spelar_idx]['Bet inn?'][self.row])
 
     def validate_submit(self):
         self.ids.legg_inn_bets.ids.odds.text = self.ids.legg_inn_bets.ids.odds.text.replace(',', '.')
@@ -151,8 +155,8 @@ class MyScreenManager(ScreenManager):
             self.submit()
 
 
-class legg_inn_resultat(Screen):
-    pass
+#class legg_inn_resultat(Screen):
+#    pass
 
 class TK_Main(App):
     def build(self):
