@@ -1,3 +1,20 @@
+'''
+TODO:
+- Dato og odds formaterar feil i Excel med ' forran (av og til?) talet
+- Ved lagt inn bet oppdaterar ikkje "*navn* sin neste kamp er kamp x runde y" verdiane
+- Om vi skal regne statistikk i Excel: odds må vere på format x,y (ikkje x.y), men i Python er floats x.y. Må finne ut av det.
+Mulig vi kunne unngått formateringsfeilen om vi skriver til Excel med odds-tekst konvertert til float
+- Bets nylig lagt til visast som None i hint_text når du blar vekk og så tilbake. Må få på plass hint_text
+- Endre tekst til "...neste kamp er RUNDE x KAMP y"? Eg blir forvirra når spinnerane står i motsatt rekkefølge
+- Har tidligare hatt errorinfo på legg inn bets som viser kva som er feil når du trykke submit. Den visast ikkje lenger, så må tilbake
+- Hemmelig runde
+- Resultat
+
+
+- Ligger litt debug prints her og der som kan vekk etterkvart
+'''
+
+
 import kivy
 import os
 import sys
@@ -71,12 +88,72 @@ class MyScreenManager(ScreenManager):
             self.row = ((int(self.runde)) - 1) * 5 + int(self.kamp) - 1
 
     def submit(self):
-        new_data = [self.ids.legg_inn_bets.ids.runde.text, self.ids.legg_inn_bets.ids.kamp.text, self.ids.legg_inn_bets.ids.dato.text, 
-                    self.ids.legg_inn_bets.ids.heimelag.text, self.ids.legg_inn_bets.ids.bortelag.text, self.ids.legg_inn_bets.ids.bet.text, 
-                    self.ids.legg_inn_bets.ids.odds.text, self.ids.legg_inn_bets.ids.innsats.text]
+        new_data = [int(self.ids.legg_inn_bets.ids.runde.text), int(self.ids.legg_inn_bets.ids.kamp.text), self.ids.legg_inn_bets.ids.dato.text,
+                    self.ids.legg_inn_bets.ids.heimelag.text, self.ids.legg_inn_bets.ids.bortelag.text, self.ids.legg_inn_bets.ids.bet.text,
+                    self.ids.legg_inn_bets.ids.odds.text, float(self.ids.legg_inn_bets.ids.innsats.text)]
 
         sheets[self.spelar_idx].insert_row(new_data, self.row+2)
         sheets[self.spelar_idx].delete_rows(self.row+3)
+        self.submit_clean()
+
+    def submit_edit(self):
+        runde = int(self.ids.legg_inn_bets.ids.runde.text)
+        kamp = int(self.ids.legg_inn_bets.ids.kamp.text)
+        rad = (runde * 5) - (5 - kamp) + 1
+        print("Runde: ", int(runde)," Kamp: ", int(kamp))
+        if (self.ids.legg_inn_bets.ids.dato.text != ""):
+            temp_dato = self.ids.legg_inn_bets.ids.dato.text
+            sheets[self.spelar_idx].update_cell((rad), 3, str(temp_dato))
+        else:
+            self.ids.legg_inn_bets.ids.dato.text = self.ids.legg_inn_bets.ids.dato.hint_text
+
+        if (self.ids.legg_inn_bets.ids.heimelag.text != ""):
+            temp_heimelag = self.ids.legg_inn_bets.ids.heimelag.text
+            sheets[self.spelar_idx].update_cell((rad), 4, temp_heimelag)
+        else:
+            self.ids.legg_inn_bets.ids.heimelag.text = self.ids.legg_inn_bets.ids.heimelag.hint_text
+
+        if (self.ids.legg_inn_bets.ids.bortelag.text != ""):
+            temp_bortelag = self.ids.legg_inn_bets.ids.bortelag.text
+            sheets[self.spelar_idx].update_cell((rad), 5, temp_bortelag)
+        else:
+            self.ids.legg_inn_bets.ids.bortelag.text = self.ids.legg_inn_bets.ids.bortelag.hint_text
+
+        if (self.ids.legg_inn_bets.ids.bet.text != ""):
+            temp_bet = self.ids.legg_inn_bets.ids.bet.text
+            sheets[self.spelar_idx].update_cell((rad), 6, temp_bet)
+        else:
+            self.ids.legg_inn_bets.ids.bet.text = self.ids.legg_inn_bets.ids.bet.hint_text
+
+        if (self.ids.legg_inn_bets.ids.odds.text != ""):
+            temp_odds = self.ids.legg_inn_bets.ids.odds.text
+            sheets[self.spelar_idx].update_cell((rad), 7, temp_odds)
+        else:
+            self.ids.legg_inn_bets.ids.odds.text = self.ids.legg_inn_bets.ids.odds.hint_text
+
+        if (self.ids.legg_inn_bets.ids.innsats.text != ""):
+            temp_innsats = self.ids.legg_inn_bets.ids.innsats.text
+            sheets[self.spelar_idx].update_cell((rad), 8, temp_innsats)
+        else:
+            self.ids.legg_inn_bets.ids.innsats.text = self.ids.legg_inn_bets.ids.innsats.hint_text
+
+        self.submit_clean()
+
+    def submit_clean(self):
+        # Restart jævelskapen - legg til hint_text, fjern text så det går an å bla
+        self.ids.legg_inn_bets.ids.dato.hint_text = self.ids.legg_inn_bets.ids.dato.text
+        self.ids.legg_inn_bets.ids.heimelag.hint_text = self.ids.legg_inn_bets.ids.heimelag.text
+        self.ids.legg_inn_bets.ids.bortelag.hint_text = self.ids.legg_inn_bets.ids.bortelag.text
+        self.ids.legg_inn_bets.ids.bet.hint_text = self.ids.legg_inn_bets.ids.bet.text
+        self.ids.legg_inn_bets.ids.odds.hint_text = self.ids.legg_inn_bets.ids.odds.text
+        self.ids.legg_inn_bets.ids.innsats.hint_text = self.ids.legg_inn_bets.ids.innsats.text
+
+        self.ids.legg_inn_bets.ids.dato.text = ""
+        self.ids.legg_inn_bets.ids.heimelag.text = ""
+        self.ids.legg_inn_bets.ids.bortelag.text = ""
+        self.ids.legg_inn_bets.ids.bet.text = ""
+        self.ids.legg_inn_bets.ids.odds.text = ""
+        self.ids.legg_inn_bets.ids.innsats.text = ""
 
     def sjekk_siste_kamp(self):
         if self.spelar == 'Martin':
@@ -123,31 +200,59 @@ class MyScreenManager(ScreenManager):
 
 
     def validate_submit(self):
-        self.ids.legg_inn_bets.ids.odds.text = self.ids.legg_inn_bets.ids.odds.text.replace(',', '.')
-        self.ids.legg_inn_bets.ids.innsats.text = self.ids.legg_inn_bets.ids.innsats.text.replace(',', '.')
+        self.ids.legg_inn_bets.ids.odds.text = self.ids.legg_inn_bets.ids.odds.text.replace('.', ',')
+        self.ids.legg_inn_bets.ids.innsats.text = self.ids.legg_inn_bets.ids.innsats.text.replace('.', ',')
 
-        if self.ids.legg_inn_bets.ids.runde.text == "Velg runde":
-            self.inputerror = "Velg runde"
-        elif self.ids.legg_inn_bets.ids.kamp.text == "Velg kamp":
-            self.inputerror = "Velg kamp"
-        elif self.ids.legg_inn_bets.ids.dato.text == "" or self.ids.legg_inn_bets.ids.dato.text == "None":
-            self.inputerror = "Fyll inn dato"
-        elif self.ids.legg_inn_bets.ids.heimelag.text == "" or self.ids.legg_inn_bets.ids.heimelag.text == "None":
-            self.inputerror = "Fyll inn heimelag"
-        elif self.ids.legg_inn_bets.ids.bortelag.text == "" or self.ids.legg_inn_bets.ids.bortelag.text == "None":
-            self.inputerror = "Fyll inn bortelag"
-        elif self.ids.legg_inn_bets.ids.bet.text == "" or self.ids.legg_inn_bets.ids.bet.text == "None":
-            self.inputerror = "Fyll inn bet"
-        elif self.ids.legg_inn_bets.ids.odds.text == "" or self.ids.legg_inn_bets.ids.odds.text == "None":
-            self.inputerror = "Fyll inn odds"
-        elif not sjekk_float(self.ids.legg_inn_bets.ids.odds.text):
-            self.inputerror = "Odds er ikkje eit tal"
-        elif self.ids.legg_inn_bets.ids.innsats.text == "" or self.ids.legg_inn_bets.ids.odds.text == "None":
-            self.inputerror = "Fyll inn innsats"
-        elif not sjekk_float(self.ids.legg_inn_bets.ids.innsats.text):
-            self.inputerror = "Innsats er ikkje eit tal"
-        else:
+        siste_rad_kamp = df[self.spelar_idx][df[self.spelar_idx]['Dato'] == "None"].index[0]
+        siste_rad_resultat = df[self.spelar_idx][df[self.spelar_idx]['Bet inn?'] == "None"].index[0]
+
+        self.siste_runde = df[self.spelar_idx]['Runde'][siste_rad_kamp]
+        self.siste_kamp = df[self.spelar_idx]['Kamp'][siste_rad_kamp]
+
+        kampar_spelt = int(self.siste_runde) * 5 - (5 - int(self.siste_kamp))
+        kamp_resultat = int(self.runde) * 5 - (5 - int(self.runde))
+
+        print(kampar_spelt, " vs ", kamp_resultat)
+        # Sjekk om det er snakk om redigering av runde -> hopp over heile validate greiene (lettvint)
+        if kamp_resultat <= kampar_spelt:
             self.inputerror = ""
+            print("Bypass!")
+            self.submit_edit()
+        # Fortsett om det er snakk om ny runde
+        elif self.ids.legg_inn_bets.ids.runde.text == "Velg runde":
+            print(1)
+            self.ids.legg_inn_bets.ids.inputerror = "Velg runde"
+        elif self.ids.legg_inn_bets.ids.kamp.text == "Velg kamp":
+            print(2)
+            self.ids.legg_inn_bets.ids.inputerror = "Velg kamp"
+        elif self.ids.legg_inn_bets.ids.dato.text == "" or self.ids.legg_inn_bets.ids.dato.text == "None":
+            print(3)
+            self.ids.legg_inn_bets.ids.inputerror = "Fyll inn dato"
+        elif self.ids.legg_inn_bets.ids.heimelag.text == "" or self.ids.legg_inn_bets.ids.heimelag.text == "None":
+            print(4)
+            self.ids.legg_inn_bets.ids.inputerror = "Fyll inn heimelag"
+        elif self.ids.legg_inn_bets.ids.bortelag.text == "" or self.ids.legg_inn_bets.ids.bortelag.text == "None":
+            print(5)
+            self.ids.legg_inn_bets.ids.inputerror = "Fyll inn bortelag"
+        elif self.ids.legg_inn_bets.ids.bet.text == "" or self.ids.legg_inn_bets.ids.bet.text == "None":
+            print(6)
+            self.ids.legg_inn_bets.ids.inputerror = "Fyll inn bet"
+        elif self.ids.legg_inn_bets.ids.odds.text == "" or self.ids.legg_inn_bets.ids.odds.text == "None":
+            print(7)
+            self.ids.legg_inn_bets.ids.inputerror = "Fyll inn odds"
+        # Sjekk under funkar dårlig, må fiksast
+        #elif not sjekk_float(self.ids.legg_inn_bets.ids.odds.text):
+        #    print(8)
+        #    self.ids.legg_inn_bets.ids.inputerror = "Odds er ikkje eit tal"
+        elif self.ids.legg_inn_bets.ids.innsats.text == "" or self.ids.legg_inn_bets.ids.odds.text == "None":
+            print(9)
+            self.ids.legg_inn_bets.ids.inputerror = "Fyll inn innsats"
+        elif not sjekk_float(self.ids.legg_inn_bets.ids.innsats.text):
+            print(10)
+            self.ids.legg_inn_bets.ids.inputerror = "Innsats er ikkje eit tal"
+        else:
+            print(11)
+            self.ids.legg_inn_bets.ids.inputerror = ""
             self.submit()
 
     def bet_inn_ut(self, value):
