@@ -1,0 +1,29 @@
+#:include legg_inn_bets.kv
+#:import MeshLinePlot kivy.garden.graph.MeshLinePlot
+#:kivy 1.11.1
+
+<SjaResultat>:
+    name: '_sja_resultat_'
+    canvas.before:
+        Color:
+            rgb: 0.25, 0.655, 0.596, 0.5
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    cols: 1
+
+    FloatLayout:
+
+        ScrollView:
+            ProsentPlot:
+                size_hint: 1, 0.9
+                pos_hint: {'left': 1, 'top': 1}
+
+        Button:
+            text: 'Tilbake'
+            background_color: 0.32, 0.55, 0.516, 1
+            size_hint: 0.1, 0.1
+            on_press:
+                root.manager.transition.direction = 'right'
+                root.manager.current = '_hovudmeny_'
+

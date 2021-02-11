@@ -1,6 +1,8 @@
 #:include legg_inn_bets.kv
 #:kivy 1.11.1
 <MyScreenManager>:
+    id: my_screen_manager
+
     VelgSpelar:
         id: velg_spelar
     HovudMeny:
@@ -8,6 +10,9 @@
     LeggInnBets:
         id: legg_inn_bets
     LeggInnResultat:
+        id: legg_inn_resultat
+    SjaResultat:
+        id: sja_resultat
 
 <VelgSpelar>:
     canvas.before:
@@ -98,6 +103,9 @@
                 background_color: 0.32, 0.55, 0.516, 1
                 size_hint: 0.4, 0.2
                 pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                on_press:
+                    root.manager.transition.direction = 'left'
+                    root.manager.current = '_sja_resultat_'
             Button:
                 text: 'Tidlegare utgaver'
                 background_color: 0.32, 0.55, 0.516, 1

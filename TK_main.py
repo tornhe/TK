@@ -5,10 +5,14 @@ TODO:
 - Om vi skal regne statistikk i Excel: odds må vere på format x,y (ikkje x.y), men i Python er floats x.y. Må finne ut av det.
 Mulig vi kunne unngått formateringsfeilen om vi skriver til Excel med odds-tekst konvertert til float
 - Bets nylig lagt til visast som None i hint_text når du blar vekk og så tilbake. Må få på plass hint_text
+- Samme med inn/ut: oppdatering blir ikkje henta inn når du blar vekk
 - Endre tekst til "...neste kamp er RUNDE x KAMP y"? Eg blir forvirra når spinnerane står i motsatt rekkefølge
 - Har tidligare hatt errorinfo på legg inn bets som viser kva som er feil når du trykke submit. Den visast ikkje lenger, så må tilbake
 - Hemmelig runde
 - Resultat
+- Plot må oppdatere seg når vi legger inn resultat
+- Plot må bli dynamisk
+- Leggge til andre typar plots? Tabellar? Mulighet til å velge kva grafar vi vil vise med knappar i bunnen?
 
 
 - Ligger litt debug prints her og der som kan vekk etterkvart
@@ -20,6 +24,7 @@ import os
 import sys
 import gspread
 import pandas as pd
+from kivy.uix.widget import Widget
 from oauth2client.service_account import ServiceAccountCredentials
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.floatlayout import FloatLayout
@@ -33,8 +38,16 @@ from kivy.properties import NumericProperty
 from kivy.uix.popup import Popup
 from gdrive import load, data_to_df
 
+# Sindre testar litt
+from math import sin, cos
+from kivy.garden.graph import Graph, MeshLinePlot
+from kivy.core.window import Window
+from kivy.uix.relativelayout import RelativeLayout
+from kivy.uix.scrollview import ScrollView
+
 from hjelpefunk import*
 Builder.load_file('legg_inn_bets.kv')
+Builder.load_file('sja_resultat.kv')
 
 martin_sheet = load('Martin')
 martin_data = data_to_df(martin_sheet)
@@ -54,11 +67,61 @@ class VelgSpelar(Screen):
 class HovudMeny(Screen):
     pass
 
+
 class LeggInnBets(Screen):
     inputerror = StringProperty("")
-    
+
+
 class LeggInnResultat(Screen):
     pass
+
+
+class SjaResultat(Screen):
+    def build(self):
+        scroll_view = ScrollView()
+        grid_layout = GridLayout(cols=1, padding=20, spacing=20, size_hint_y=None)
+        grid_layout.bind(minimum_size=grid_layout.setter('size'))
+        graph = ProsentPlot(size_hint_y=None, height=500)
+        graph2 = ProsentPlot(size_hint_y=None, height=500)
+        label = Label(text="Hello World!", size_hint_y=None)
+        label2 = Label(text="Hello World!", size_hint_y=None)
+        grid_layout.add_widget(label)
+        grid_layout.add_widget(graph)
+        grid_layout.add_widget(label2)
+        grid_layout.add_widget(graph2)
+        scroll_view.add_widget(grid_layout)
+
+        # return grid_layout
+        return scroll_view
+
+
+class ProsentPlot(RelativeLayout):
+    def __init__(self, **kwargs):
+        super(ProsentPlot, self).__init__(**kwargs)
+        self.graph = Graph(x_ticks_minor=1, x_ticks_major=5, y_ticks_major=25,
+                           y_grid_label=True, x_grid_label=True, x_grid=True, y_grid=True,
+                           xmin=1, ymin=-1, ymax=200, draw_border=False)
+        # graph.size = (1200, 400)
+        # self.graph.pos = self.center
+        self.graph.xlabel="Runde"
+        self.graph.ylabel="Prosent"
+        self.graph.xmax = 20 # Må gjere denna dynamisk!!
+        self.graph.background_normal = ''
+        self.graph.background_color = [0, 0, 0, 1]
+
+        self.martin_prosent = MeshLinePlot(color=[1, 0, 0, 1])
+        self.martin_prosent.points = utbetpros(df, sheets, 0)
+
+        self.sindre_prosent = MeshLinePlot(color=[1, 1, 0, 1])
+        self.sindre_prosent.points = utbetpros(df, sheets, 1)
+
+        self.tor_prosent = MeshLinePlot(color=[0, 1, 0, 1])
+        self.tor_prosent.points = utbetpros(df, sheets, 2)
+
+        self.add_widget(self.graph)
+        self.graph.add_plot(self.martin_prosent)
+        self.graph.add_plot(self.sindre_prosent)
+        self.graph.add_plot(self.tor_prosent)
 
 
 class MyScreenManager(ScreenManager):
@@ -255,22 +318,27 @@ class MyScreenManager(ScreenManager):
             self.ids.legg_inn_bets.ids.inputerror = ""
             self.submit()
 
+    # For å skrive bet inn/ut til Excel
     def bet_inn_ut(self, value):
         if(value == 0):
             sheets[self.spelar_idx].update_cell(self.row+2, 9, "Nei")
         if(value == 1):
             sheets[self.spelar_idx].update_cell(self.row+2, 9, "Ja")
 
+    # Sjekk om bet_inn er true i Excel
     def sjekk_inn(self):
-        if (df[self.spelar_idx]['Bet inn?'][self.row] == "Ja"):
+        rad = (int(self.runde) * 5) - (5 - int(self.kamp)) - 1
+        if (df[self.spelar_idx]['Bet inn?'][rad] == "Ja"):
             print("True")
             return True
         else:
             print("False")
             return False
 
+    # Sjekk om bet_ut er true i Excel
     def sjekk_ut(self):
-        if (df[self.spelar_idx]['Bet inn?'][self.row] == "Nei"):
+        rad = (int(self.runde) * 5) - (5 - int(self.kamp)) - 1
+        if (df[self.spelar_idx]['Bet inn?'][rad] == "Nei"):
             return True
         else:
             return False
