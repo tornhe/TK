@@ -77,22 +77,82 @@ class LeggInnResultat(Screen):
 
 
 class SjaResultat(Screen):
+    #vis_tabell = ObjectProperty()
+    def vis_tabell(self):
+        self.ids.btn_vis_tabell.disabled = True
+        self.ids.btn_vis_prosplot.disabled = False
+        self.ids.prosentplot.opacity = 0
+        self.ids.tabell.opacity = 1
+    def vis_prosentplot(self):
+        self.ids.btn_vis_prosplot.disabled = True
+        self.ids.btn_vis_tabell.disabled = False
+        self.ids.prosentplot.opacity = 1
+        self.ids.tabell.opacity = 0
+
     def build(self):
+        '''
         scroll_view = ScrollView()
-        grid_layout = GridLayout(cols=1, padding=20, spacing=20, size_hint_y=None)
-        grid_layout.bind(minimum_size=grid_layout.setter('size'))
-        graph = ProsentPlot(size_hint_y=None, height=500)
-        graph2 = ProsentPlot(size_hint_y=None, height=500)
-        label = Label(text="Hello World!", size_hint_y=None)
-        label2 = Label(text="Hello World!", size_hint_y=None)
-        grid_layout.add_widget(label)
-        grid_layout.add_widget(graph)
-        grid_layout.add_widget(label2)
-        grid_layout.add_widget(graph2)
-        scroll_view.add_widget(grid_layout)
+        #grid_layout = GridLayout(cols=1, padding=20, spacing=20, size_hint_y=None)
+        #grid_layout.bind(minimum_size=grid_layout.setter('size'))
+        self.prosentplot = ProsentPlot(size_hint_y=None, height=500)
+        #Kan visst ha fleire grafar
+        #graph2 = ProsentPlot(size_hint_y=None, height=500)
+        #label = Label(text="Hello World!", size_hint_y=None)
+        #label2 = Label(text="Hello World!", size_hint_y=None)
+        self.add_widget(self.prosentplot)
+        #grid_layout.add_widget(label)
+        #grid_layout.add_widget(graph)
+        #grid_layout.add_widget(label2)
+        #grid_layout.add_widget(graph2)
+        #scroll_view.add_widget(grid_layout)
 
         # return grid_layout
-        return scroll_view
+        #return scroll_view
+        '''
+        pass
+
+class Cell(Label):
+    pass
+class Tabell(ScrollView):
+    '''https://stackoverflow.com/questions/45153225/packaged-kivy-app-visually-incorrect
+    Kan kanskje vere ei grei løysing på tabell.
+    Tenkte: En tabell for nøkkeldata (forsøkt på her)
+    Kan og lage endå en knapp for å vise alle kampar med resultat for kvar spelar (valgmeny for spelar)
+    '''
+    #grid = ObjectProperty(None)
+    def __init__(self, **kwargs):
+        super(Tabell, self).__init__(**kwargs)
+        #grid_layout = GridLayout(cols=3, padding=20, spacing=20, size_hint_y=None)
+        #grid_layout.bind(minimum_size=grid_layout.setter('size'))
+
+        martin_siste_rad = df[0][df[0]['Bet inn?'] == "None"].index[0]
+        sindre_siste_rad = df[1][df[1]['Bet inn?'] == "None"].index[0]
+        tor_siste_rad = df[2][df[2]['Bet inn?'] == "None"].index[0]
+
+        martin_siste_data = []
+        martin_siste_data.append(sheets[0].cell(martin_siste_rad, 10).value) # Total innsats
+        martin_siste_data.append(sheets[0].cell(martin_siste_rad, 12).value)  # Total gevinst
+        martin_siste_data.append(sheets[0].cell(martin_siste_rad, 13).value)  # Utbetalingsprosent
+
+        sindre_siste_data = []
+        sindre_siste_data.append(sheets[0].cell(sindre_siste_rad, 10).value)  # Total innsats
+        sindre_siste_data.append(sheets[0].cell(sindre_siste_rad, 12).value)  # Total gevinst
+        sindre_siste_data.append(sheets[0].cell(sindre_siste_rad, 13).value)  # Utbetalingsprosent
+
+        tor_siste_data = []
+        tor_siste_data.append(sheets[0].cell(tor_siste_rad, 10).value)  # Total innsats
+        tor_siste_data.append(sheets[0].cell(tor_siste_rad, 12).value)  # Total gevinst
+        tor_siste_data.append(sheets[0].cell(tor_siste_rad, 13).value)  # Utbetalingsprosent
+
+        spelar_data = [martin_siste_data, sindre_siste_data, tor_siste_data]
+        #martin_rad = Label(text=str(martin_siste_rad))
+        #sindre_rad = Label(text=str(sindre_siste_rad))
+        #tor_rad = Label(text=str(tor_siste_rad))
+''' Funkar ikkje
+        for i in range(3): # Kvar spelar
+            for j in range(3): # Kvar data
+                self.ids.grid.add_widget(Cell(text=str(spelar_data[i][j])))
+'''
 
 
 class ProsentPlot(RelativeLayout):
@@ -100,7 +160,7 @@ class ProsentPlot(RelativeLayout):
         super(ProsentPlot, self).__init__(**kwargs)
         self.graph = Graph(x_ticks_minor=1, x_ticks_major=5, y_ticks_major=25,
                            y_grid_label=True, x_grid_label=True, x_grid=True, y_grid=True,
-                           xmin=1, ymin=-1, ymax=200, draw_border=False)
+                           xmin=1, ymin=0, ymax=200, draw_border=False)
         # graph.size = (1200, 400)
         # self.graph.pos = self.center
         self.graph.xlabel="Runde"
@@ -118,10 +178,12 @@ class ProsentPlot(RelativeLayout):
         self.tor_prosent = MeshLinePlot(color=[0, 1, 0, 1])
         self.tor_prosent.points = utbetpros(df, sheets, 2)
 
-        self.add_widget(self.graph)
         self.graph.add_plot(self.martin_prosent)
         self.graph.add_plot(self.sindre_prosent)
         self.graph.add_plot(self.tor_prosent)
+
+        self.add_widget(self.graph)
+
 
 
 class MyScreenManager(ScreenManager):
@@ -155,6 +217,7 @@ class MyScreenManager(ScreenManager):
                     self.ids.legg_inn_bets.ids.heimelag.text, self.ids.legg_inn_bets.ids.bortelag.text, self.ids.legg_inn_bets.ids.bet.text,
                     self.ids.legg_inn_bets.ids.odds.text, float(self.ids.legg_inn_bets.ids.innsats.text)]
 
+        # Må fikse det her - insert/delete row fjernar formlane i Excel
         sheets[self.spelar_idx].insert_row(new_data, self.row+2)
         sheets[self.spelar_idx].delete_rows(self.row+3)
         self.submit_clean()

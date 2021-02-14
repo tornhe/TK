@@ -14,10 +14,34 @@
 
     FloatLayout:
 
-        ScrollView:
-            ProsentPlot:
-                size_hint: 1, 0.9
-                pos_hint: {'left': 1, 'top': 1}
+        #ScrollView:
+        ProsentPlot:
+            id: prosentplot
+            opacity: 1
+            size_hint: 1, 0.9
+            pos_hint: {'left': 1, 'top': 1}
+
+        Tabell:
+            grid: grid
+            id: tabell
+            opacity: 0
+            #size_hint: 0.6, 0.3
+            #pos_hint: {'left': 0.5, 'top': 1}
+            #pos_hint: {'left' : 0.7, 'top' : 0.7}
+            bar_width: 25
+            scroll_type: ['bars', 'content']
+            bar_color: [0.4, 0.7, 0.9, 1]
+            bar_inactive_color: [0.2, 0.7, 0.9, .5]
+            do_scroll_x: True
+            do_scroll_y: True
+            GridLayout:
+                id: grid
+                cols: 15
+                rows: 30
+                size_hint: (None, None)
+                width: self.minimum_width
+                height: self.minimum_height
+
 
         Button:
             text: 'Tilbake'
@@ -26,4 +50,25 @@
             on_press:
                 root.manager.transition.direction = 'right'
                 root.manager.current = '_hovudmeny_'
+
+        Button:
+            id: btn_vis_tabell
+            text: 'Tabell'
+            background_color: 0.32, 0.55, 0.516, 1
+            size_hint: 0.1, 0.1
+            pos_hint: {'right': 1}
+            on_press:
+                root.manager.transition.direction = 'right'
+                root.vis_tabell()
+
+        Button:
+            id: btn_vis_prosplot
+            text: 'Prosentplot'
+            disabled: True
+            background_color: 0.32, 0.55, 0.516, 1
+            size_hint: 0.1, 0.1
+            pos_hint: {'right': 0.9}
+            on_press:
+                root.manager.transition.direction = 'right'
+                root.vis_prosentplot()
 
