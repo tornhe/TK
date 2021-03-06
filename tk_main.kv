@@ -1,4 +1,5 @@
 #:include legg_inn_bets.kv
+#:include customs.kv
 #:kivy 1.11.1
 <MyScreenManager>:
     id: my_screen_manager
@@ -234,10 +235,11 @@
                 bet_ut.active = root.parent.sjekk_ut()
                 #root.parent.sjekk_inn_ut()
 
-        Button:
-            text: 'Tilbake'
-            background_color: 0.32, 0.55, 0.516, 1
-            size_hint: 0.1, 0.1
+#        Button:
+        TilbakeBtn:
+            text: 'TILBAKE'
+#            background_color: 0.32, 0.55, 0.516, 1
+#            size_hint: 0.1, 0.08
             on_press:
                 root.manager.transition.direction = 'right'
                 runde.text, kamp.text = root.parent.forrige_kamp()
