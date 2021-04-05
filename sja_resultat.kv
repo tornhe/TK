@@ -4,6 +4,7 @@
 
 <SjaResultat>:
     name: '_sja_resultat_'
+    #rgv: rgv
     canvas.before:
         Color:
             rgb: 0.25, 0.655, 0.596, 0.5
@@ -41,6 +42,30 @@
                 height: self.minimum_height
                 #orientation: 'vertical' # defines the orientation of data items
 
+
+        KampTabell:
+            id: kamptabell
+            rgv: rgv
+            opacity: 0
+            viewclass: 'Button'  # defines the viewtype for the data items.
+            orientation: "vertical"
+            spacing: 40
+            padding:10, 10
+            space_x: self.size[0]/5
+
+            RecycleGridLayout:
+                id: rgv
+                cols: 11
+                data: self.data
+                #color:(0, 0.7, 0.4, 0.8)
+                default_size: None, dp(40)
+
+                # defines the size of the widget in reference to width and height
+                default_size_hint: 0.4, None
+                size_hint_y: None
+                height: self.minimum_height
+                #orientation: 'vertical' # defines the orientation of data items
+
         Button:
             text: 'Tilbake'
             background_color: 0.32, 0.55, 0.516, 1
@@ -48,6 +73,25 @@
             on_press:
                 root.manager.transition.direction = 'right'
                 root.manager.current = '_hovudmeny_'
+
+        Spinner:
+            id: spelar_tabell
+            size_hint: 0.1, 0.1
+            pos_hint: {'right': .7}
+            text: "Spelar"
+            values: 'Martin', 'Sindre', 'Tor'
+            background_color: 0.32, 0.55, 0.516, 1
+            on_text: root.parent.update_match_data(self.text)
+
+        Button:
+            id: btn_vis_kamptabell
+            text: 'Kampar'
+            background_color: 0.32, 0.55, 0.516, 1
+            size_hint: 0.1, 0.1
+            pos_hint: {'right': 0.8}
+            on_press:
+                root.manager.transition.direction = 'right'
+                root.vis_kamptabell()
 
         Button:
             id: btn_vis_tabell

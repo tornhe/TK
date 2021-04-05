@@ -88,15 +88,25 @@ class LeggInnResultat(Screen):
 
 
 class SjaResultat(Screen):
-    #vis_tabell = ObjectProperty()
+    def vis_kamptabell(self):
+        self.ids.btn_vis_kamptabell.disabled = True
+        self.ids.btn_vis_tabell.disabled = False
+        self.ids.btn_vis_prosplot.disabled = False
+        self.ids.kamptabell.opacity = 1
+        self.ids.prosentplot.opacity = 0
+        self.ids.tabell.opacity = 0
     def vis_tabell(self):
+        self.ids.btn_vis_kamptabell.disabled = False
         self.ids.btn_vis_tabell.disabled = True
         self.ids.btn_vis_prosplot.disabled = False
+        self.ids.kamptabell.opacity = 0
         self.ids.prosentplot.opacity = 0
         self.ids.tabell.opacity = 1
     def vis_prosentplot(self):
+        self.ids.btn_vis_kamptabell.disabled = False
         self.ids.btn_vis_prosplot.disabled = True
         self.ids.btn_vis_tabell.disabled = False
+        self.ids.kamptabell.opacity = 0
         self.ids.prosentplot.opacity = 1
         self.ids.tabell.opacity = 0
 
@@ -108,11 +118,10 @@ class Tabell(RecycleView):
     Kan kanskje vere ei grei løysing på tabell.
     Tenkte: En tabell for nøkkeldata (forsøkt på her)
     Kan og lage endå en knapp for å vise alle kampar med resultat for kvar spelar (valgmeny for spelar)
+    Er på ganske tynn is med tabellgreiene her kjenne eg... Spesielt den andre.
     '''
     def __init__(self, **kwargs):
         super(Tabell, self).__init__(**kwargs)
-        #self.data = [{'text': str(x)} for x in range(20)]
-
 
         martin_siste_rad = df[0][df[0]['Bet inn?'] == "None"].index[0]
         sindre_siste_rad = df[1][df[1]['Bet inn?'] == "None"].index[0]
@@ -148,11 +157,11 @@ class Tabell(RecycleView):
         hdr.update(header_attr)
         self.data.append(hdr)
 
-        hdr = {'text': "GEVINST"}
+        hdr = {'text': "INNSATS"}
         hdr.update(header_attr)
         self.data.append(hdr)
 
-        hdr = {'text': "INNSATS"}
+        hdr = {'text': "GEVINST"}
         hdr.update(header_attr)
         self.data.append(hdr)
 
@@ -185,6 +194,97 @@ class Tabell(RecycleView):
             self.data.append(data)
 
             spelar_idx += 1
+
+class KampTabell(RecycleView):
+    '''
+    Her skal ein altså kunne vise alle kampar til spelaren valgt som default, og deretter kunne velge andre sine kampar ein vil sjå.
+    Det funkar heilt fint å hardkode det i def __init__, men ellers funkar ingenting
+    '''
+    def __init__(self, **kwargs):
+        super(KampTabell, self).__init__(**kwargs)
+
+        self.temp_data = []
+        # UTSJÅNAD PÅ HEADER
+        self.header_attr = {'color': [0, 0, 0, 1],
+                       'background_color': [0.3, 0.3, 0.4, 0.8],
+                       'background_disabled_normal': '',
+                       'background_normal': '',
+                       'disabled': False,
+                       'bold': True}
+
+        # UTSJÅNAD PÅ DATA
+        self.data_attr1 = {'color': [0, 0, 0, 1],
+                      'background_color': [0.7, 0.9, 0.5, 1],
+                      'background_disabled_normal': '',
+                      'background_normal': '',
+                      'disabled': False,
+                      'bold': False}
+
+        self.data_attr2 = {'color': [0, 0, 0, 1],
+                      'background_color': [0.7, 0.9, 0, 1],
+                      'background_disabled_normal': '',
+                      'background_normal': '',
+                      'disabled': False,
+                      'bold': False}
+
+
+
+        # HEADERS
+        self.hdr = {'text': "RUNDE"}
+        self.hdr.update(self.header_attr)
+        self.temp_data.append(self.hdr)
+
+        self.hdr = {'text': "KAMP"}
+        self.hdr.update(self.header_attr)
+        self.temp_data.append(self.hdr)
+
+        self.hdr = {'text': "DATO"}
+        self.hdr.update(self.header_attr)
+        self.temp_data.append(self.hdr)
+
+        self.hdr = {'text': "HEIMELAG"}
+        self.hdr.update(self.header_attr)
+        self.temp_data.append(self.hdr)
+
+        self.hdr = {'text': "BORTELAG"}
+        self.hdr.update(self.header_attr)
+        self.temp_data.append(self.hdr)
+
+        self.hdr = {'text': "BET"}
+        self.hdr.update(self.header_attr)
+        self.temp_data.append(self.hdr)
+
+        self.hdr = {'text': "ODDS"}
+        self.hdr.update(self.header_attr)
+        self.temp_data.append(self.hdr)
+
+        self.hdr = {'text': "INNSATS"}
+        self.hdr.update(self.header_attr)
+        self.temp_data.append(self.hdr)
+
+        self.hdr = {'text': "INN?"}
+        self.hdr.update(self.header_attr)
+        self.temp_data.append(self.hdr)
+
+        self.hdr = {'text': "TOTAL INNSATS"}
+        self.hdr.update(self.header_attr)
+        self.temp_data.append(self.hdr)
+
+        self.hdr = {'text': "TOTAL GEVINST"}
+        self.hdr.update(self.header_attr)
+        self.temp_data.append(self.hdr)
+
+        self.data = self.oppdater_tabell(1) # HER, HARDKODA, SPELARINDEX 1
+    def oppdater_tabell(self, idx):
+        print("IDX: ", idx)
+        self.data = self.temp_data  # HEADERS
+        self.spelardata = alle_kampar(df, self.data_attr1, self.data_attr2, idx)
+        for elem in self.spelardata:
+            self.data.append(elem)
+        return self.data
+        #self.refresh_from_data() # Trur denne er overflødig, men skulle samtidig tru heile jævla driten var det
+        #self.ids.kamptabell.ids.rgv.data = self.data # vetta faen...
+
 
 class ProsentPlot(RelativeLayout):
     def __init__(self, **kwargs):
@@ -238,10 +338,6 @@ class BalansePlot(RelativeLayout):
                 balanse = int(df[i].at[j-1, "Total innsats"]) - int(df[i].at[j-1, "Total gevinst"]) # Total innsats
                 spelar_balanse[i].append(balanse)
 
-        print(martin_balanse)
-        print(sindre_balanse)
-        print(tor_balanse)
-
         # Ville bruke matplotlib, men ser ikkje ut til at der er ein versjon som matchar Python 3.9
         #plt.plot(sindre_balanse)
         #plt.ylabel("test")
@@ -271,6 +367,15 @@ class MyScreenManager(ScreenManager):
     #def __init__(self, **kwargs):
      #   super(MyScreenManager, self).__init__(**kwargs)
 
+    def update_match_data(self, name):
+        # Treng funksjonen for å sende spelar_idx trur eg
+        if name == "Martin":
+            idx = 0
+        elif name == "Sindre":
+            idx = 1
+        elif name == "Tor":
+            idx = 2
+        KampTabell().oppdater_tabell(idx)
     def update_table(self):
         if self.runde is not None and self.kamp is not None:
             self.row = ((int(self.runde)) - 1) * 5 + int(self.kamp) - 1
@@ -466,6 +571,7 @@ class MyScreenManager(ScreenManager):
             return True
         else:
             return False
+
 class legg_inn_resultat(Screen):
     pass
 

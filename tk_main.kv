@@ -51,6 +51,7 @@
                 background_color: 0.32, 0.55, 0.516, 1
                 on_text: root.parent.spelar = self.text
                 on_text: root.parent.sjekk_siste_kamp()
+                on_text: root.parent.update_match_data(self.text)
                 on_text: root.manager.current = '_hovudmeny_'
                 
 <HovudMeny>:
