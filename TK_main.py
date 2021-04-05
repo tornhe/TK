@@ -1,8 +1,8 @@
 '''
 TODO:
-- Dato og odds formaterar feil i Excel med ' forran (av og til?) talet
+- FERDIG (?) : Dato og odds formaterar feil i Excel med ' forran (av og til?) talet
 - Ved lagt inn bet oppdaterar ikkje "*navn* sin neste kamp er kamp x runde y" verdiane
-- Om vi skal regne statistikk i Excel: odds må vere på format x,y (ikkje x.y), men i Python er floats x.y. Må finne ut av det.
+- FERDIG (?) : Om vi skal regne statistikk i Excel: odds må vere på format x,y (ikkje x.y), men i Python er floats x.y. Må finne ut av det.
 Mulig vi kunne unngått formateringsfeilen om vi skriver til Excel med odds-tekst konvertert til float
 - Bets nylig lagt til visast som None i hint_text når du blar vekk og så tilbake. Må få på plass hint_text
 - Samme med inn/ut: oppdatering blir ikkje henta inn når du blar vekk
@@ -17,7 +17,6 @@ Mulig vi kunne unngått formateringsfeilen om vi skriver til Excel med odds-teks
 
 - Ligger litt debug prints her og der som kan vekk etterkvart
 '''
-
 
 import kivy
 import os
@@ -40,12 +39,24 @@ from gdrive import load, data_to_df
 
 # Sindre testar litt
 from math import sin, cos
-from kivy.garden.graph import Graph, MeshLinePlot
+from kivy.garden.graph import Graph, MeshLinePlot, LinePlot
 from kivy.core.window import Window
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.scrollview import ScrollView
+from kivy.uix.button import Button
+from kivy.uix.recycleview import RecycleView
+#from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+#import matplotlib.pyplot as plt
 
 from hjelpefunk import*
+
+from kivy.metrics import dp
+
+from kivymd.app import MDApp
+from kivymd.uix.datatables import MDDataTable
+from kivy.uix.anchorlayout import AnchorLayout
 Builder.load_file('legg_inn_bets.kv')
 Builder.load_file('sja_resultat.kv')
 
@@ -90,92 +101,112 @@ class SjaResultat(Screen):
         self.ids.tabell.opacity = 0
 
     def build(self):
-        '''
-        scroll_view = ScrollView()
-        #grid_layout = GridLayout(cols=1, padding=20, spacing=20, size_hint_y=None)
-        #grid_layout.bind(minimum_size=grid_layout.setter('size'))
-        self.prosentplot = ProsentPlot(size_hint_y=None, height=500)
-        #Kan visst ha fleire grafar
-        #graph2 = ProsentPlot(size_hint_y=None, height=500)
-        #label = Label(text="Hello World!", size_hint_y=None)
-        #label2 = Label(text="Hello World!", size_hint_y=None)
-        self.add_widget(self.prosentplot)
-        #grid_layout.add_widget(label)
-        #grid_layout.add_widget(graph)
-        #grid_layout.add_widget(label2)
-        #grid_layout.add_widget(graph2)
-        #scroll_view.add_widget(grid_layout)
-
-        # return grid_layout
-        #return scroll_view
-        '''
         pass
 
-class Cell(Label):
-    pass
-class Tabell(ScrollView):
+class Tabell(RecycleView):
     '''https://stackoverflow.com/questions/45153225/packaged-kivy-app-visually-incorrect
     Kan kanskje vere ei grei løysing på tabell.
     Tenkte: En tabell for nøkkeldata (forsøkt på her)
     Kan og lage endå en knapp for å vise alle kampar med resultat for kvar spelar (valgmeny for spelar)
     '''
-    #grid = ObjectProperty(None)
     def __init__(self, **kwargs):
         super(Tabell, self).__init__(**kwargs)
-        #grid_layout = GridLayout(cols=3, padding=20, spacing=20, size_hint_y=None)
-        #grid_layout.bind(minimum_size=grid_layout.setter('size'))
+        #self.data = [{'text': str(x)} for x in range(20)]
+
 
         martin_siste_rad = df[0][df[0]['Bet inn?'] == "None"].index[0]
         sindre_siste_rad = df[1][df[1]['Bet inn?'] == "None"].index[0]
         tor_siste_rad = df[2][df[2]['Bet inn?'] == "None"].index[0]
+        siste_rader = [martin_siste_rad, sindre_siste_rad, tor_siste_rad]
+        spelar_navn = ["Martin", "Sindre", "Tor"]
 
-        martin_siste_data = []
-        martin_siste_data.append(sheets[0].cell(martin_siste_rad, 10).value) # Total innsats
-        martin_siste_data.append(sheets[0].cell(martin_siste_rad, 12).value)  # Total gevinst
-        martin_siste_data.append(sheets[0].cell(martin_siste_rad, 13).value)  # Utbetalingsprosent
+        # UTSJÅNAD PÅ HEADER
+        header_attr = {'color'  : [0, 0, 0, 1],
+            'background_color'  : [0.3, 0.3, 0.4, 0.8],
+    'background_disabled_normal': '',
+             'background_normal': '',
+                    'disabled'  : False,
+                       'bold' : True}
 
-        sindre_siste_data = []
-        sindre_siste_data.append(sheets[0].cell(sindre_siste_rad, 10).value)  # Total innsats
-        sindre_siste_data.append(sheets[0].cell(sindre_siste_rad, 12).value)  # Total gevinst
-        sindre_siste_data.append(sheets[0].cell(sindre_siste_rad, 13).value)  # Utbetalingsprosent
+        # UTSJÅNAD PÅ DATA
+        data_attr1 = {'color'  : [0, 0, 0, 1],
+                      'background_color'  : [0.7, 0.9, 0.5, 1],
+                      'background_disabled_normal': '',
+                      'background_normal': '',
+                      'disabled'  : False,
+                      'bold' : False}
 
-        tor_siste_data = []
-        tor_siste_data.append(sheets[0].cell(tor_siste_rad, 10).value)  # Total innsats
-        tor_siste_data.append(sheets[0].cell(tor_siste_rad, 12).value)  # Total gevinst
-        tor_siste_data.append(sheets[0].cell(tor_siste_rad, 13).value)  # Utbetalingsprosent
+        data_attr2 = {'color': [0, 0, 0, 1],
+                     'background_color': [0.7, 0.9, 0, 1],
+                     'background_disabled_normal': '',
+                     'background_normal': '',
+                     'disabled': False,
+                      'bold' : False}
 
-        spelar_data = [martin_siste_data, sindre_siste_data, tor_siste_data]
-        #martin_rad = Label(text=str(martin_siste_rad))
-        #sindre_rad = Label(text=str(sindre_siste_rad))
-        #tor_rad = Label(text=str(tor_siste_rad))
-''' Funkar ikkje
-        for i in range(3): # Kvar spelar
-            for j in range(3): # Kvar data
-                self.ids.grid.add_widget(Cell(text=str(spelar_data[i][j])))
-'''
+        # HEADERS
+        hdr = {'text' : "NAVN"}
+        hdr.update(header_attr)
+        self.data.append(hdr)
 
+        hdr = {'text': "GEVINST"}
+        hdr.update(header_attr)
+        self.data.append(hdr)
+
+        hdr = {'text': "INNSATS"}
+        hdr.update(header_attr)
+        self.data.append(hdr)
+
+        hdr = {'text': "UTBET-%"}
+        hdr.update(header_attr)
+        self.data.append(hdr)
+
+        # DATA
+        spelar_idx = 0
+        for rad in siste_rader:
+            if spelar_idx % 2 == 0:
+                data_attr = data_attr1
+            else:
+                data_attr = data_attr2
+
+            data = {'text' : spelar_navn[spelar_idx]}
+            data.update(data_attr)
+            self.data.append(data)
+
+            data = {'text': str(df[spelar_idx].at[rad-1, "Total innsats"]) + "kr"} # Total innsats
+            data.update(data_attr)
+            self.data.append(data)
+
+            data = {'text': str(df[spelar_idx].at[rad-1, "Total gevinst"]) + "kr"} # Total gevinst
+            data.update(data_attr)
+            self.data.append(data)
+
+            data = {'text': str(df[spelar_idx].at[rad-1, "Prosent"]) + "%"} # Utbetalingsprosent
+            data.update(data_attr)
+            self.data.append(data)
+
+            spelar_idx += 1
 
 class ProsentPlot(RelativeLayout):
     def __init__(self, **kwargs):
         super(ProsentPlot, self).__init__(**kwargs)
-        self.graph = Graph(x_ticks_minor=1, x_ticks_major=5, y_ticks_major=25,
+        self.graph = Graph(x_ticks_minor=1, x_ticks_major=5, y_ticks_minor = 10, y_ticks_major=50,
                            y_grid_label=True, x_grid_label=True, x_grid=True, y_grid=True,
                            xmin=1, ymin=0, ymax=200, draw_border=False)
         # graph.size = (1200, 400)
         # self.graph.pos = self.center
         self.graph.xlabel="Runde"
-        self.graph.ylabel="Prosent"
+        self.graph.ylabel="Utbetalingsprosent"
         self.graph.xmax = 20 # Må gjere denna dynamisk!!
         self.graph.background_normal = ''
         self.graph.background_color = [0, 0, 0, 1]
 
-        self.martin_prosent = MeshLinePlot(color=[1, 0, 0, 1])
+        self.martin_prosent = LinePlot(line_width = 4, color=[1, 0, 0, 1])
         self.martin_prosent.points = utbetpros(df, sheets, 0)
 
-        self.sindre_prosent = MeshLinePlot(color=[1, 1, 0, 1])
+        self.sindre_prosent = LinePlot(line_width = 4, color=[1, 1, 0, 1])
         self.sindre_prosent.points = utbetpros(df, sheets, 1)
 
-        self.tor_prosent = MeshLinePlot(color=[0, 1, 0, 1])
+        self.tor_prosent = LinePlot(line_width = 4, color=[0, 1, 0, 1])
         self.tor_prosent.points = utbetpros(df, sheets, 2)
 
         self.graph.add_plot(self.martin_prosent)
@@ -183,6 +214,38 @@ class ProsentPlot(RelativeLayout):
         self.graph.add_plot(self.tor_prosent)
 
         self.add_widget(self.graph)
+
+class BalansePlot(RelativeLayout):
+    def __init__(self, **kwargs):
+        super(BalansePlot, self).__init__(**kwargs)
+        self.graph = Graph(x_ticks_minor=1, x_ticks_major=5, y_ticks_minor = 10, y_ticks_major=50,
+                           y_grid_label=True, x_grid_label=True, x_grid=True, y_grid=True,
+                           xmin=1, ymin=0, ymax=200, draw_border=False)
+
+        martin_siste_rad = df[0][df[0]['Bet inn?'] == "None"].index[0]
+        sindre_siste_rad = df[1][df[1]['Bet inn?'] == "None"].index[0]
+        tor_siste_rad = df[2][df[2]['Bet inn?'] == "None"].index[0]
+        siste_rader = [martin_siste_rad, sindre_siste_rad, tor_siste_rad]
+        spelar_navn = ["Martin", "Sindre", "Tor"]
+
+        martin_balanse = [0]
+        sindre_balanse = [0]
+        tor_balanse = [0]
+        spelar_balanse = [martin_balanse, sindre_balanse, tor_balanse]
+
+        for i in range(3):
+            for j in range(siste_rader[i]):
+                balanse = int(df[i].at[j-1, "Total innsats"]) - int(df[i].at[j-1, "Total gevinst"]) # Total innsats
+                spelar_balanse[i].append(balanse)
+
+        print(martin_balanse)
+        print(sindre_balanse)
+        print(tor_balanse)
+
+        # Ville bruke matplotlib, men ser ikkje ut til at der er ein versjon som matchar Python 3.9
+        #plt.plot(sindre_balanse)
+        #plt.ylabel("test")
+        #self.add_widget(FigureCanvasKivyAgg(plt.gcf()))
 
 
 
@@ -392,10 +455,8 @@ class MyScreenManager(ScreenManager):
     def sjekk_inn(self):
         rad = (int(self.runde) * 5) - (5 - int(self.kamp)) - 1
         if (df[self.spelar_idx]['Bet inn?'][rad] == "Ja"):
-            print("True")
             return True
         else:
-            print("False")
             return False
 
     # Sjekk om bet_ut er true i Excel
@@ -414,3 +475,5 @@ class TK_Main(App):
 
 if __name__ == '__main__':
     TK_Main().run()
+
+
