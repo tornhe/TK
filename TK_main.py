@@ -6,7 +6,6 @@ TODO:
 Mulig vi kunne unngått formateringsfeilen om vi skriver til Excel med odds-tekst konvertert til float
 - Bets nylig lagt til visast som None i hint_text når du blar vekk og så tilbake. Må få på plass hint_text
 - Samme med inn/ut: oppdatering blir ikkje henta inn når du blar vekk
-- Endre tekst til "...neste kamp er RUNDE x KAMP y"? Eg blir forvirra når spinnerane står i motsatt rekkefølge
 - Har tidligare hatt errorinfo på legg inn bets som viser kva som er feil når du trykke submit. Den visast ikkje lenger, så må tilbake
 - Hemmelig runde
 - Resultat
@@ -218,8 +217,11 @@ class MyScreenManager(ScreenManager):
                     self.ids.legg_inn_bets.ids.odds.text, float(self.ids.legg_inn_bets.ids.innsats.text)]
 
         # Må fikse det her - insert/delete row fjernar formlane i Excel
-        sheets[self.spelar_idx].insert_row(new_data, self.row+2)
-        sheets[self.spelar_idx].delete_rows(self.row+3)
+        print('ja')
+        cells = 'A2:B2'
+        sheets[self.spelar_idx].update_cells(cells, ['test', 'test2'], value_input_option='USER_ENTERED')
+        #sheets[self.spelar_idx].insert_row(new_data, self.row+2)
+        #sheets[self.spelar_idx].delete_rows(self.row+3)
         self.submit_clean()
 
     def submit_edit(self):
